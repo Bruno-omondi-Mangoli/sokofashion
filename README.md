@@ -1,36 +1,37 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SokoFashion
 
-## Getting Started
+A multi-tenant platform for small fashion and beauty sellers in East Africa. Each shop gets a public storefront, a private dashboard and an optional staff control module. Launch market: Kenya. Working product name: DukaLink.
 
-First, run the development server:
+## Tech stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Next.js (App Router), TypeScript in strict mode, Tailwind CSS, Supabase (Postgres, Auth, Storage, Row Level Security), Vercel.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Getting started
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Install Node.js 24 LTS and Git.
+2. Clone the repository and open a terminal in the project folder.
+3. Run `npm install`. This also installs the Git hooks.
+4. Copy `.env.example` to `.env.local` and fill in the values.
+5. Run `npm run dev` and open http://localhost:3000.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Useful commands
 
-## Learn More
+- `npm run dev` starts the development server.
+- `npm run check` runs type check, lint, format check and build. This is what CI runs.
+- `npm run format` formats every file.
 
-To learn more about Next.js, take a look at the following resources:
+## Project layout
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `src/app` routes only
+- `src/components/ui` reusable interface pieces
+- `src/features` one folder per business area
+- `src/lib` shared helpers, including validated environment variables
+- `src/config` fixed settings such as countries and currencies
+- `docs` architecture, decision records and project notes
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Documentation
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [Architecture overview](docs/architecture.md)
+- [Decision records](docs/adr)
+- [Project notes](docs/project)
+- [Contributing](CONTRIBUTING.md)
