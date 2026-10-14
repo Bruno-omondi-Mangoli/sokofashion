@@ -35,3 +35,7 @@ Next.js (App Router), TypeScript in strict mode, Tailwind CSS, Supabase (Postgre
 - [Decision records](docs/adr)
 - [Project notes](docs/project)
 - [Contributing](CONTRIBUTING.md)
+
+## Database
+
+Run Docker Desktop, then `npm run db:start`. Studio runs at http://127.0.0.1:54323. Use `npm run db:reset` to rebuild the local database from migrations. Change the database only through new migration files.
