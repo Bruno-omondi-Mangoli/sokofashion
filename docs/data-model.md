@@ -50,3 +50,25 @@ Row Level Security: members can read the membership list of their own shops. Nob
 - is_shop_member(shop_id): true if the current user is an active member
 - has_shop_role(shop_id, roles): true if the current user is an active member with one of those roles
 - create_shop(name, slug, country_code): creates a shop and its owner membership together
+
+## shop_invitations
+
+An owner's invitation for an email address to join a shop as manager or attendant.
+
+- id, shop_id
+- email: lowercase, the person the invitation is for
+- role: manager or attendant, never owner
+- status: pending, accepted or revoked
+- invited_by, accepted_by, created_at, expires_at (14 days), accepted_at
+- one pending invitation per email per shop
+
+Row Level Security: owners can read the invitations of their shop. Nobody can write directly. All changes go through functions.
+
+## Team functions
+
+- invite_staff(shop_id, email, role): owner only, at most 10 non-owner people per shop including pending invitations
+- accept_invitation(invitation_id): the invited person, email must match and be confirmed
+- revoke_invitation(invitation_id): owner only
+- set_staff_member_active(member_id, make_active): owner only, owners cannot be deactivated
+- list_shop_staff(shop_id): owner only, returns the team with emails
+- my_pending_invitations(): the caller's open invitations, empty unless their email is confirmed
