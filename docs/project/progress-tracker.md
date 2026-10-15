@@ -2,9 +2,9 @@
 
 Last updated: 15 October 2026
 Current phase: Phase 2 (Multi-tenant database, roles, RLS with isolation tests)
-Current chunk: Chunk 8, shops, shop_members and roles (awaiting verification)
-Next chunk: Chunk 9, automated isolation tests that try to break Row Level Security, and a check that every public table has RLS
-After that: Chunk 10, run database tests in CI, then Phase 3 authentication
+Current chunk: Chunk 9, RLS isolation and guardrail tests (awaiting verification)
+Next chunk: Chunk 10, run the database tests in GitHub Actions CI, which finishes Phase 2
+After that: Phase 3, authentication, seller onboarding, shop creation, staff invitations
 
 ## Phases
 
@@ -47,7 +47,8 @@ Zero spend until the pilot is complete (D013, D014). Upgrade Vercel and Supabase
 - Husky, lint-staged, commitlint, GitHub Actions CI (job name Checks), Dependabot: done and green
 - Zod, server-only, env validators, Vitest with 11 tests: done
 - Docker Desktop (WSL 2, memory capped at 6 GB), Supabase CLI as a dev dependency: done
-- Local database: countries table, shops and shop_members tables, helper functions, create_shop function, all with RLS: added in Chunk 8
+- Local database: countries, shops, shop_members, helper functions, create_shop, all with RLS: done
+- pgTAP tests in supabase/tests/database (31 checks): added in Chunk 9
 - GitHub Pro: not purchased, deferred to pilot stage
 
 ## Machine
@@ -66,9 +67,11 @@ Domain:
 
 npm run check : typecheck, lint, format check, tests and build in one go
 npm run db:start, db:stop, db:reset, db:status : local database controls
+npm run db:test : database security tests (needs Docker and the local database running)
 Rule: never merge a pull request unless Checks is green.
 Rule: change the database only through new migration files.
 Rule: create files in Git Bash with touch or mkdir, write content in VS Code.
+Rule: every new shop-owned table ships with isolation tests.
 Health check: http://localhost:3000/api/health
 
 ## Open questions
@@ -82,4 +85,4 @@ Health check: http://localhost:3000/api/health
 
 ## Notes for the next chat
 
-Chunk 8 delivered: shop_role and shop_status enums, shops and shop_members tables, is_shop_member, has_shop_role and create_shop functions, strict grants, RLS policies. No insert, update or delete on shop_members through the API yet. Next are automated isolation tests (pgTAP via supabase test db), then running them in CI.
+Chunk 9 delivered: rls_guardrails.test.sql (every public table has RLS, every security definer function locks search_path) and shop_isolation.test.sql (29 checks with impersonated users: owner, rival owner, attendant, revoked member, user with no shop, anonymous). Tests run locally with npm run db:test and are not in CI yet. Next is adding them to GitHub Actions.
