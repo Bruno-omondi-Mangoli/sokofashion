@@ -105,3 +105,4 @@ Health check: http://localhost:3000/api/health
 ## Notes for the next chat
 
 Chunk 14 delivered: migration staff_invitations (shop_invitations table and six functions: invite_staff, accept_invitation, revoke_invitation, set_staff_member_active, list_shop_staff, my_pending_invitations), pgTAP file shop_staff.test.sql (32 checks), src/features/staff, team page at /dashboard/team/[slug], invitation cards on dashboard and onboarding, getMyShops now takes the user id and returns roles. Pushed to staging after merge. Next is email confirmation and security settings on staging, which completes Phase 3.
+Fix after Chunk 14: onboarding now shows an owner or staff choice screen (D033).
