@@ -2,9 +2,9 @@
 
 Last updated: 15 October 2026
 Current phase: Phase 3 (Authentication, seller onboarding, shop creation, staff invitations)
-Current chunk: Chunk 11, Supabase account and staging project (awaiting verification)
-Next chunk: Chunk 12, connect Next.js to Supabase and add sign up, log in and log out
-After that: Chunk 13, onboarding and shop creation screen, Chunk 14, staff invitations
+Current chunk: Chunk 12, Supabase auth with sign up, log in, log out (awaiting verification)
+Next chunk: Chunk 13, onboarding screen: create a shop (name, link name, country) through create_shop
+After that: Chunk 14, staff invitations and roles, Chunk 15, rate limiting and email confirmation on staging
 
 ## Phases
 
@@ -43,16 +43,15 @@ Zero spend until the pilot is complete (D013, D014). Upgrade Vercel and Supabase
 
 - VS Code, Git, Git Bash, Node 24, npm 11: done and verified
 - GitHub account with two-factor: done
-- Next.js 16 project with TypeScript strict, Tailwind, ESLint, Prettier: done
+- Next.js 16 project with TypeScript strict, Tailwind, ESLint, Prettier (Cache Components switched off): done
 - Husky, lint-staged, commitlint, Dependabot: done
 - GitHub Actions CI with two jobs, Checks and Database tests: done
-- Zod, server-only, env validators, Vitest with 11 tests: done
-- Docker Desktop (WSL 2, memory capped at 6 GB), Supabase CLI as a dev dependency: done
+- Zod, server-only, env validators, Vitest with 20 tests: done
+- Docker Desktop, Supabase CLI as a dev dependency: done
 - Local database: countries, shops, shop_members, helper functions, create_shop, all with RLS: done
 - pgTAP tests in supabase/tests/database (31 checks), run locally and in CI: done
-- Bitwarden password manager: set up in Chunk 11
-- Supabase account (free, signed in with GitHub) and organization SokoFashion: created in Chunk 11
-- Supabase staging project sokofashion-staging, linked, migrations pushed: done in Chunk 11
+- Bitwarden, Supabase account and organization, staging project linked with migrations pushed: done
+- @supabase/supabase-js and @supabase/ssr, server client, proxy, sign up, log in, log out, protected dashboard: added in Chunk 12 (local database only)
 - Supabase production project: not yet created (second free slot reserved)
 - Vercel account and project: not yet created
 - GitHub Pro: not purchased, deferred to pilot stage
@@ -65,8 +64,9 @@ Windows 11 Pro, 16 GB RAM, Ryzen 7 Pro, SSD with 200 GB free. Virtualization ena
 
 Repository URL: https://github.com/Bruno-omondi-Mangoli/sokofashion
 Local Studio: http://127.0.0.1:54323
-Supabase staging project ref: (fill in your 20 letter ref)
-Supabase staging region: (fill in the region you chose)
+Local app address: http://localhost:3000 (always use localhost, not 127.0.0.1)
+Supabase staging project ref: (your 20 letter ref)
+Supabase staging region: (your region)
 Supabase production project:
 Vercel project:
 Domain:
@@ -78,12 +78,13 @@ npm run check : typecheck, lint, format check, tests and build in one go
 npm run db:start, db:stop, db:reset, db:status : local database controls
 npm run db:test : database security tests (needs Docker and the local database running)
 npx supabase migration list : compare local and staging migrations
-npx supabase db push : send merged migrations to staging (use the dry run flag first)
+npx supabase db push : send merged migrations to staging (dry run first)
 Rule: never merge a pull request unless both CI checks are green.
 Rule: change the database only through new migration files.
 Rule: create files in Git Bash with touch or mkdir, write content in VS Code.
 Rule: every new shop-owned table ships with isolation tests.
 Rule: staging holds fake data only.
+Rule: access decisions use supabase.auth.getUser on the server.
 Health check: http://localhost:3000/api/health
 
 ## Open questions
@@ -93,9 +94,10 @@ Health check: http://localhost:3000/api/health
 - Plan prices after talking to the 5 pilot friends and a few strangers
 - Answers to the nine pilot interview questions
 - Confirm Pochi la Biashara details and currency decimal places in later chunks
-- Rate limiting for create_shop (Phase 3)
-- Lawyer question for Phase 12: storing Kenyan customer data in a foreign Supabase region and the Privacy Policy wording
+- Rate limiting for create_shop and sign up, email confirmation on staging and production (Chunk 15)
+- Phone number login for sellers: needs a paid SMS provider, revisit after the pilot
+- Lawyer questions for Phase 12: foreign Supabase region and Privacy Policy wording, collecting emails under the Data Protection Act, ODPC registration
 
 ## Notes for the next chat
 
-Chunk 11 delivered: Supabase account, organization, staging project, CLI login and link, two migrations pushed with db push, docs/environments.md. Free plan has two project slots, one used by staging, one reserved for production. Next is connecting the Next.js app to Supabase for sign up, log in and log out, which adds Supabase keys to the env validators.
+Chunk 12 delivered: Supabase libraries, public env schema extended with the Supabase address and publishable key, server client in src/lib/supabase/server.ts, src/proxy.ts refreshing sessions, auth feature in src/features/auth (schemas, actions, form), pages login, signup, dashboard, CI build placeholders. Verified only against the local database. Next is the onboarding screen that calls create_shop.
