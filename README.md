@@ -39,3 +39,5 @@ Next.js (App Router), TypeScript in strict mode, Tailwind CSS, Supabase (Postgre
 ## Database
 
 Run Docker Desktop, then `npm run db:start`. Studio runs at http://127.0.0.1:54323. Use `npm run db:reset` to rebuild the local database from migrations. Change the database only through new migration files.
+
+- Every new table that belongs to a shop must come with isolation tests in `supabase/tests/database` that try to read and change another shop's data.
