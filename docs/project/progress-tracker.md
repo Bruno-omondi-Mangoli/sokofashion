@@ -1,14 +1,14 @@
 # Progress Tracker
 
-Last updated: 14 October 2026
+Last updated: 15 October 2026
 Current phase: Phase 2 (Multi-tenant database, roles, RLS with isolation tests)
-Current chunk: Chunk 7, pilot user stories and success metrics (awaiting verification and interviews)
-Next chunk: Chunk 8, shops, shop_members and roles tables with RLS
-After that: Chunk 9, isolation tests that try to break Row Level Security
+Current chunk: Chunk 8, shops, shop_members and roles (awaiting verification)
+Next chunk: Chunk 9, automated isolation tests that try to break Row Level Security, and a check that every public table has RLS
+After that: Chunk 10, run database tests in CI, then Phase 3 authentication
 
 ## Phases
 
-Phase 0: Product definition, user stories, success metrics: done pending friend interviews
+Phase 0: Product definition, user stories, success metrics: done pending friend interview answers
 Phase 1: Tooling, accounts, Git and GitHub, repository, CI, scaffold: done
 Phase 2: Multi-tenant database, roles, RLS with isolation tests: in progress
 Phase 3: Authentication, seller onboarding, shop creation: not started
@@ -25,7 +25,7 @@ Phase 13: Feedback, pricing validation, iteration, marketplace planning: not sta
 
 ## MVP v1 scope
 
-Phases 0 to 8, trimmed Phase 11, Phase 12. Manual subscription handling. Anti-theft (Phase 9) and automated billing (Phase 10) are v1.1.
+Phases 0 to 8, trimmed Phase 11, Phase 12. Manual subscription handling. Anti-theft (Phase 9) and automated billing (Phase 10) are v1.1. Because all five pilot shops have staff, a basic staff invitation and roles flow is pulled forward into Phase 3.
 
 ## Working pace
 
@@ -37,7 +37,7 @@ Zero spend until the pilot is complete (D013, D014). Upgrade Vercel and Supabase
 
 ## Pilot shops
 
-5 friends selling women's clothes, shoes and handbags. Payments by cash and M-Pesa (Paybill, Buy Goods Till, Pochi la Biashara). Some have one staff member, at least one works alone (exact numbers to confirm). Storefront must show products from several angles.
+5 friends selling women's clothes, shoes and handbags. All five have one staff member each. Payments by cash and M-Pesa (Paybill, Buy Goods Till, Pochi la Biashara). Storefront must show products from several angles.
 
 ## Accounts and tools set up
 
@@ -47,7 +47,7 @@ Zero spend until the pilot is complete (D013, D014). Upgrade Vercel and Supabase
 - Husky, lint-staged, commitlint, GitHub Actions CI (job name Checks), Dependabot: done and green
 - Zod, server-only, env validators, Vitest with 11 tests: done
 - Docker Desktop (WSL 2, memory capped at 6 GB), Supabase CLI as a dev dependency: done
-- Local Supabase database with countries table and RLS: done and verified
+- Local database: countries table, shops and shop_members tables, helper functions, create_shop function, all with RLS: added in Chunk 8
 - GitHub Pro: not purchased, deferred to pilot stage
 
 ## Machine
@@ -68,6 +68,7 @@ npm run check : typecheck, lint, format check, tests and build in one go
 npm run db:start, db:stop, db:reset, db:status : local database controls
 Rule: never merge a pull request unless Checks is green.
 Rule: change the database only through new migration files.
+Rule: create files in Git Bash with touch or mkdir, write content in VS Code.
 Health check: http://localhost:3000/api/health
 
 ## Open questions
@@ -75,10 +76,10 @@ Health check: http://localhost:3000/api/health
 - Final product name (SokoFashion is the project name, DukaLink is the provisional product name)
 - Payment gateway for launch (Phase 6)
 - Plan prices after talking to the 5 pilot friends and a few strangers
-- Exact number of pilot shops with staff
 - Answers to the nine pilot interview questions
 - Confirm Pochi la Biashara details and currency decimal places in later chunks
+- Rate limiting for create_shop (Phase 3)
 
 ## Notes for the next chat
 
-Chunk 7 delivered: docs/project/pilot-and-user-stories.md with shop profile, stories, success numbers and interview questions. New fact: Pochi la Biashara and cash must be supported (D017). Next is the shops, shop_members and roles tables with RLS, then isolation tests.
+Chunk 8 delivered: shop_role and shop_status enums, shops and shop_members tables, is_shop_member, has_shop_role and create_shop functions, strict grants, RLS policies. No insert, update or delete on shop_members through the API yet. Next are automated isolation tests (pgTAP via supabase test db), then running them in CI.
