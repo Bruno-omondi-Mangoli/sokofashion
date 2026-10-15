@@ -48,3 +48,27 @@ jobs:
 
       - name: Build
         run: npm run build
+
+  database:
+    name: Database tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Starting Supabase replays every migration from an empty database.
+      - name: Start local Supabase
+        run: npx supabase start
+
+      - name: Run database security tests
+        run: npx supabase test db

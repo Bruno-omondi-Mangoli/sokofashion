@@ -1,17 +1,17 @@
 # Progress Tracker
 
 Last updated: 15 October 2026
-Current phase: Phase 2 (Multi-tenant database, roles, RLS with isolation tests)
-Current chunk: Chunk 9, RLS isolation and guardrail tests (awaiting verification)
-Next chunk: Chunk 10, run the database tests in GitHub Actions CI, which finishes Phase 2
-After that: Phase 3, authentication, seller onboarding, shop creation, staff invitations
+Current phase: Phase 2 complete, moving to Phase 3
+Current chunk: Chunk 10, database tests in CI (awaiting verification)
+Next chunk: Chunk 11, Supabase account, staging cloud project, linking the CLI, pushing migrations to staging
+After that: Chunk 12, Supabase Auth in Next.js (sign up, log in, log out)
 
 ## Phases
 
 Phase 0: Product definition, user stories, success metrics: done pending friend interview answers
 Phase 1: Tooling, accounts, Git and GitHub, repository, CI, scaffold: done
-Phase 2: Multi-tenant database, roles, RLS with isolation tests: in progress
-Phase 3: Authentication, seller onboarding, shop creation: not started
+Phase 2: Multi-tenant database, roles, RLS with isolation tests: done
+Phase 3: Authentication, seller onboarding, shop creation, staff invitations: next
 Phase 4: Products, variants, images, stock ledger: not started
 Phase 5: Public storefront, cart, checkout: not started
 Phase 6: Seller payment recording and confirmation, provider interface: not started
@@ -25,7 +25,7 @@ Phase 13: Feedback, pricing validation, iteration, marketplace planning: not sta
 
 ## MVP v1 scope
 
-Phases 0 to 8, trimmed Phase 11, Phase 12. Manual subscription handling. Anti-theft (Phase 9) and automated billing (Phase 10) are v1.1. Because all five pilot shops have staff, a basic staff invitation and roles flow is pulled forward into Phase 3.
+Phases 0 to 8, trimmed Phase 11, Phase 12. Manual subscription handling. Anti-theft (Phase 9) and automated billing (Phase 10) are v1.1. Because all five pilot shops have staff, a basic staff invitation and roles flow is in Phase 3.
 
 ## Working pace
 
@@ -33,7 +33,7 @@ Phases 0 to 8, trimmed Phase 11, Phase 12. Manual subscription handling. Anti-th
 
 ## Budget rule
 
-Zero spend until the pilot is complete (D013, D014). Upgrade Vercel and Supabase before any shop pays real money. Enable GitHub branch protection before the pilot launches.
+Zero spend until the pilot is complete (D013, D014). Upgrade Vercel and Supabase before any shop pays real money. Enable GitHub branch protection before the pilot launches, requiring both Checks and Database tests.
 
 ## Pilot shops
 
@@ -44,11 +44,13 @@ Zero spend until the pilot is complete (D013, D014). Upgrade Vercel and Supabase
 - VS Code, Git, Git Bash, Node 24, npm 11: done and verified
 - GitHub account with two-factor: done
 - Next.js 16 project with TypeScript strict, Tailwind, ESLint, Prettier: done
-- Husky, lint-staged, commitlint, GitHub Actions CI (job name Checks), Dependabot: done and green
+- Husky, lint-staged, commitlint, Dependabot: done
+- GitHub Actions CI with two jobs, Checks and Database tests: done in Chunk 10
 - Zod, server-only, env validators, Vitest with 11 tests: done
 - Docker Desktop (WSL 2, memory capped at 6 GB), Supabase CLI as a dev dependency: done
 - Local database: countries, shops, shop_members, helper functions, create_shop, all with RLS: done
-- pgTAP tests in supabase/tests/database (31 checks): added in Chunk 9
+- pgTAP tests in supabase/tests/database (31 checks), run locally and in CI: done
+- Supabase cloud account and staging project: not yet created
 - GitHub Pro: not purchased, deferred to pilot stage
 
 ## Machine
@@ -68,7 +70,7 @@ Domain:
 npm run check : typecheck, lint, format check, tests and build in one go
 npm run db:start, db:stop, db:reset, db:status : local database controls
 npm run db:test : database security tests (needs Docker and the local database running)
-Rule: never merge a pull request unless Checks is green.
+Rule: never merge a pull request unless both CI checks are green.
 Rule: change the database only through new migration files.
 Rule: create files in Git Bash with touch or mkdir, write content in VS Code.
 Rule: every new shop-owned table ships with isolation tests.
@@ -85,4 +87,4 @@ Health check: http://localhost:3000/api/health
 
 ## Notes for the next chat
 
-Chunk 9 delivered: rls_guardrails.test.sql (every public table has RLS, every security definer function locks search_path) and shop_isolation.test.sql (29 checks with impersonated users: owner, rival owner, attendant, revoked member, user with no shop, anonymous). Tests run locally with npm run db:test and are not in CI yet. Next is adding them to GitHub Actions.
+Phase 2 finished. CI now has a Database tests job that starts local Supabase on the robot and runs the 31 pgTAP checks. Verified by pushing a deliberately broken migration that went red, then discarding it. Next is creating the free Supabase staging project, linking the CLI and pushing migrations, then authentication.

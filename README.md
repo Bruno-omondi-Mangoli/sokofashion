@@ -19,6 +19,7 @@ Next.js (App Router), TypeScript in strict mode, Tailwind CSS, Supabase (Postgre
 - `npm run dev` starts the development server.
 - `npm run check` runs type check, lint, format check and build. This is what CI runs.
 - `npm run format` formats every file.
+  GitHub Actions also runs them on every pull request.
 
 ## Project layout
 
