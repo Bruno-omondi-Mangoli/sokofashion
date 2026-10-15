@@ -2,9 +2,9 @@
 
 Last updated: 15 October 2026
 Current phase: Phase 3 (Authentication, seller onboarding, shop creation, staff invitations)
-Current chunk: Chunk 12, Supabase auth with sign up, log in, log out (awaiting verification)
-Next chunk: Chunk 13, onboarding screen: create a shop (name, link name, country) through create_shop
-After that: Chunk 14, staff invitations and roles, Chunk 15, rate limiting and email confirmation on staging
+Current chunk: Chunk 13, shop onboarding (awaiting verification)
+Next chunk: Chunk 14, staff invitations and roles: owner adds an attendant, attendant logs in and sees the shop
+After that: Chunk 15, email confirmation on staging, rate limiting and security settings
 
 ## Phases
 
@@ -12,7 +12,7 @@ Phase 0: Product definition, user stories, success metrics: done pending friend 
 Phase 1: Tooling, accounts, Git and GitHub, repository, CI, scaffold: done
 Phase 2: Multi-tenant database, roles, RLS with isolation tests: done
 Phase 3: Authentication, seller onboarding, shop creation, staff invitations: in progress
-Phase 4: Products, variants, images, stock ledger: not started
+Phase 4: Design system chunk first, then products, variants, images, stock ledger: not started
 Phase 5: Public storefront, cart, checkout: not started
 Phase 6: Seller payment recording and confirmation, provider interface: not started
 Phase 7: Orders, delivery, digital receipts, notifications: not started
@@ -43,15 +43,15 @@ Zero spend until the pilot is complete (D013, D014). Upgrade Vercel and Supabase
 
 - VS Code, Git, Git Bash, Node 24, npm 11: done and verified
 - GitHub account with two-factor: done
-- Next.js 16 project with TypeScript strict, Tailwind, ESLint, Prettier (Cache Components switched off): done
+- Next.js 16 project with TypeScript strict, Tailwind, ESLint, Prettier (Cache Components off): done
 - Husky, lint-staged, commitlint, Dependabot: done
 - GitHub Actions CI with two jobs, Checks and Database tests: done
-- Zod, server-only, env validators, Vitest with 20 tests: done
+- Zod, server-only, env validators, Vitest with 37 tests: done
 - Docker Desktop, Supabase CLI as a dev dependency: done
-- Local database: countries, shops, shop_members, helper functions, create_shop, all with RLS: done
-- pgTAP tests in supabase/tests/database (31 checks), run locally and in CI: done
-- Bitwarden, Supabase account and organization, staging project linked with migrations pushed: done
-- @supabase/supabase-js and @supabase/ssr, server client, proxy, sign up, log in, log out, protected dashboard: added in Chunk 12 (local database only)
+- Local database: countries, shops, shop_members, helper functions, create_shop with reserved slugs and a 3 shop limit, all with RLS: done
+- pgTAP tests in supabase/tests/database (40 checks), run locally and in CI: done
+- Bitwarden, Supabase account and organization, staging project linked, three migrations pushed: done
+- Supabase client, proxy, sign up, log in, log out, onboarding, dashboard: done (verified on the local database)
 - Supabase production project: not yet created (second free slot reserved)
 - Vercel account and project: not yet created
 - GitHub Pro: not purchased, deferred to pilot stage
@@ -85,6 +85,7 @@ Rule: create files in Git Bash with touch or mkdir, write content in VS Code.
 Rule: every new shop-owned table ships with isolation tests.
 Rule: staging holds fake data only.
 Rule: access decisions use supabase.auth.getUser on the server.
+Rule: important rules are enforced in the database, forms only help.
 Health check: http://localhost:3000/api/health
 
 ## Open questions
@@ -94,10 +95,11 @@ Health check: http://localhost:3000/api/health
 - Plan prices after talking to the 5 pilot friends and a few strangers
 - Answers to the nine pilot interview questions
 - Confirm Pochi la Biashara details and currency decimal places in later chunks
-- Rate limiting for create_shop and sign up, email confirmation on staging and production (Chunk 15)
+- Email confirmation on staging and production, stronger rate limiting, CAPTCHA (Chunk 15 and Phase 11)
 - Phone number login for sellers: needs a paid SMS provider, revisit after the pilot
-- Lawyer questions for Phase 12: foreign Supabase region and Privacy Policy wording, collecting emails under the Data Protection Act, ODPC registration
+- Generated TypeScript types for the database: add in a later chunk
+- Lawyer questions for Phase 12: foreign Supabase region and Privacy Policy wording, collecting emails under the Data Protection Act, ODPC registration, trademark and impersonation clause in the Terms of Service
 
 ## Notes for the next chat
 
-Chunk 12 delivered: Supabase libraries, public env schema extended with the Supabase address and publishable key, server client in src/lib/supabase/server.ts, src/proxy.ts refreshing sessions, auth feature in src/features/auth (schemas, actions, form), pages login, signup, dashboard, CI build placeholders. Verified only against the local database. Next is the onboarding screen that calls create_shop.
+Chunk 13 delivered: migration shop_slug_rules_and_limit (reserved slugs constraint, create_shop limited to 3 shops per user with an advisory lock), pgTAP file shop_slug_rules.test.sql (9 checks), src/features/shops (slug helper, schema, queries, action, form), onboarding page, dashboard now routes by shop count. Pushed to staging after merge. Next is staff invitations: owner adds an attendant by email, with controlled functions because shop_members has no direct write access.
