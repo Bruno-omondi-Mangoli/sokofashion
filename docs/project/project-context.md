@@ -1,0 +1,1 @@
+- Create files and folders in Git Bash (mkdir, touch, code). Write all file content in VS Code. Never create long files with cat and EOF.
