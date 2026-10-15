@@ -1,0 +1,1 @@
+D017: Seller payment methods at launch are M-Pesa Buy Goods Till, Paybill, Pochi la Biashara, and cash. All M-Pesa methods use buyer submitted codes confirmed by the seller, with duplicate code detection. Reason: these are the methods the pilot shops use today. Status: active, confirm Pochi la Biashara details in Phase 6.
