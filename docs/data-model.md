@@ -31,6 +31,7 @@ One row per seller business. This is the tenant. Its id is the shop_id used by e
 - created_at, updated_at
 
 Row Level Security: members can read their own shops. Owners can update name and language only. No direct insert or delete. Shops are created through the create_shop function.
+Extra rules: the slug cannot be a reserved word such as admin, login or dashboard (constraint shops_slug_not_reserved). A user may create at most 3 shops, enforced inside create_shop, which serialises requests from the same user with an advisory lock.
 
 ## shop_members
 
