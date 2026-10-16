@@ -15,8 +15,8 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 
       {problem === 'confirm' ? (
         <p role="alert" className="text-sm text-red-700">
-          That confirmation link is invalid or has expired. If you already confirmed your email, log
-          in below. Otherwise create your account again to get a new link.
+          That link is invalid or has expired. If you already confirmed your email, log in below. If
+          you were resetting your password, request a new link.
         </p>
       ) : null}
 
@@ -25,6 +25,13 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         submitLabel="Log in"
         passwordAutoComplete="current-password"
       />
+
+      <p className="text-sm">
+        <Link href="/forgot-password" className="underline">
+          Forgot password?
+        </Link>
+      </p>
+
       <p className="text-sm">
         New here?{' '}
         <Link href="/signup" className="underline">

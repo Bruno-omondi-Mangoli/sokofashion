@@ -3,9 +3,9 @@ import { confirmParamsSchema, safeNextPath } from '@/features/auth/confirm';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 /*
- * Finishes email confirmation. Supabase emails the person a link to this
- * address. We check the one-time code with Supabase, which confirms the email
- * and starts a session, and then send the person onward.
+ * Finishes the email links Supabase sends: confirming an email address and
+ * recovering a password. We check the one-time code with Supabase, which
+ * starts a session, and then send the person onward.
  */
 export async function GET(request: NextRequest) {
   const params = request.nextUrl.searchParams;
@@ -30,12 +30,16 @@ export async function GET(request: NextRequest) {
   });
 
   if (error) {
-    console.error('email confirmation failed', { code: error.code });
+    console.error('email link verification failed', { code: error.code });
     return NextResponse.redirect(failure);
   }
 
+  /* A recovery link always leads to the new password page, whatever "next" says */
+  const destination =
+    parsed.data.type === 'recovery' ? '/reset-password' : safeNextPath(params.get('next'));
+
   const success = request.nextUrl.clone();
-  success.pathname = safeNextPath(params.get('next'));
+  success.pathname = destination;
   success.search = '';
   return NextResponse.redirect(success);
 }

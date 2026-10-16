@@ -40,3 +40,16 @@ SokoFashion runs in three environments. Each has its own database and its own se
 
 - Supabase free projects pause after about a week without activity, and have no automatic backups.
 - The free plan allows two active projects, which is why only staging and production exist.
+
+## Authentication settings checklist (staging and production)
+
+These live in the Supabase dashboard, because pushing the local config would overwrite the real site address. Re-check this list after creating any new project.
+
+- Confirm email is on.
+- Minimum password length is 8.
+- Site URL is the real address of that environment.
+- Redirect URLs list only that environment's addresses.
+- - The Confirm sign up template matches supabase/templates/confirmation.html (this may be locked until custom SMTP is set up, so it is done in Phase 12).
+- Production needs custom SMTP before real users sign up, because the built-in sender only delivers to organization team members and has a very low limit.
+- Leaked password protection and stronger bot protection need a paid plan or a CAPTCHA, planned for Phase 11.
+- The Reset password template matches supabase/templates/recovery.html. Like the confirmation template, it may be locked until custom SMTP is set up, so it is applied in Phase 12.
