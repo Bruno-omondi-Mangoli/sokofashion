@@ -1,10 +1,10 @@
 # Progress Tracker
 
 Last updated: 16 October 2026
-Current phase: Phase 3 complete, moving to Phase 4
-Current chunk: Chunk 15b, password show or hide and forgot password (awaiting verification)
-Next chunk: Chunk 16, design system (D027): colour tokens, fonts, core components, restyle of existing pages
-After that: Chunk 17, products and categories tables with RLS and isolation tests
+Current phase: Phase 4 (design system first, then products)
+Current chunk: Chunk 16, design system (awaiting verification)
+Next chunk: Chunk 17, restyle dashboard, onboarding and team pages with an app shell
+After that: Chunk 18, categories, products and variants tables with RLS and isolation tests
 
 ## Phases
 
@@ -12,7 +12,7 @@ Phase 0: Product definition, user stories, success metrics: done pending friend 
 Phase 1: Tooling, accounts, Git and GitHub, repository, CI, scaffold: done
 Phase 2: Multi-tenant database, roles, RLS with isolation tests: done
 Phase 3: Authentication, onboarding, shop creation, staff invitations, email confirmation, password reset: done
-Phase 4: Design system chunk first, then products, variants, images, stock ledger: next
+Phase 4: Design system, then products, variants, images, stock ledger: in progress
 Phase 5: Public storefront, cart, checkout: not started
 Phase 6: Seller payment recording and confirmation, provider interface: not started
 Phase 7: Orders, delivery, digital receipts, notifications: not started
@@ -43,17 +43,16 @@ Zero spend until the pilot is complete (D013, D014). Upgrade Vercel and Supabase
 
 - VS Code, Git, Git Bash, Node 24, npm 11: done and verified
 - GitHub account with two-factor: done
-- Next.js 16 project with TypeScript strict, Tailwind, ESLint, Prettier (Cache Components off): done
+- Next.js 16 project with TypeScript strict, Tailwind 4, ESLint, Prettier (Cache Components off): done
 - Husky, lint-staged, commitlint, Dependabot: done
 - GitHub Actions CI with two jobs, Checks and Database tests: done
-- Zod, server-only, env validators, Vitest with 62 tests: done
+- Zod, server-only, env validators, Vitest with 92 tests: done
 - Docker Desktop, Supabase CLI as a dev dependency: done
 - Local database with shops, members, invitations, team functions, reserved slugs and a 3 shop limit, all with RLS: done
 - pgTAP tests in supabase/tests/database (72 checks), run locally and in CI: done
 - Bitwarden, Supabase account and organization, staging project linked, four migrations pushed: done
 - Auth: sign up, log in, log out, email confirmation, password show or hide, forgot and reset password, onboarding choice screen, dashboard, team page: done
-- Local email confirmation on, fake inbox at http://127.0.0.1:54324: done
-- Staging auth settings applied except email templates, which are locked until custom SMTP: done
+- Design system: tokens, fonts (Young Serif and Atkinson Hyperlegible Next), contrast helper and tests, core components, /design guide, restyled home and sign in pages: added in Chunk 16
 - Supabase production project: not yet created (second free slot reserved)
 - Vercel account and project: not yet created
 - Custom SMTP and domain: not yet decided (D036)
@@ -69,6 +68,7 @@ Repository URL: https://github.com/Bruno-omondi-Mangoli/sokofashion
 Local Studio: http://127.0.0.1:54323
 Local fake inbox: http://127.0.0.1:54324
 Local app address: http://localhost:3000 (always use localhost, not 127.0.0.1)
+Design guide: http://localhost:3000/design (hidden in production)
 Supabase staging project ref: (your 20 letter ref)
 Supabase staging region: (your region)
 Supabase production project:
@@ -91,6 +91,7 @@ Rule: every new shop-owned table ships with isolation tests.
 Rule: staging holds fake data only.
 Rule: access decisions use supabase.auth.getUser on the server.
 Rule: important rules are enforced in the database, forms only help.
+Rule: colours, fonts and sizes come from design tokens, and every new colour pair is added to the contrast test.
 Health check: http://localhost:3000/api/health
 
 ## Open questions
@@ -101,14 +102,17 @@ Health check: http://localhost:3000/api/health
 - Answers to the nine pilot interview questions
 - Custom SMTP: buy a domain in Phase 12, or create pilot accounts by hand in the dashboard (D036)
 - Staging email templates (confirmation and recovery) are locked until custom SMTP exists. Apply supabase/templates files in Phase 12.
+- A Swahili speaker must confirm all Swahili text before the pilot (D041)
+- Owner feedback on how the new look feels, to adjust tokens
+- Dark mode: revisit in Phase 11
 - Confirm Pochi la Biashara details and currency decimal places in later chunks
 - CAPTCHA, leaked password protection and stronger rate limits (Phase 11)
 - A change password option for logged in users: add on a settings page later
 - Team size limit of 10 should later come from plan limits in the database
 - Phone number login for sellers: needs a paid SMS provider, revisit after the pilot
 - Generated TypeScript types for the database: add in a later chunk
-- Lawyer questions for Phase 12: foreign Supabase region and Privacy Policy wording, collecting emails, ODPC registration, trademark and impersonation clause, controller and processor roles for staff data, data processing agreement with the email provider
+- Lawyer questions for Phase 12: foreign Supabase region and Privacy Policy wording, collecting emails, ODPC registration, trademark and impersonation clause, controller and processor roles for staff data, data processing agreement with the email provider, font licences
 
 ## Notes for the next chat
 
-Chunk 15 tests 1 to 8 passed. Chunk 15b delivered: PasswordField with show or hide, forgot password page and form, reset password page and form, recovery email template, /auth/confirm now handles recovery links and always sends them to /reset-password, reset signs out other devices, 8 new unit tests (62 total). Staging email templates cannot be edited without custom SMTP. Next is the design system chunk (D027), then products.
+Chunk 15b verified. Chunk 16 delivered: kanga inspired design system (pindo border band, kanga frame, ujumbe sayings), tokens in globals.css, fonts Young Serif and Atkinson Hyperlegible Next, WCAG contrast helper and 30 new tests (92 total), components in src/components/ui, restyled home and sign in pages, /design guide hidden in production, docs/design-system.md. Dashboard, onboarding and team pages still use the old plain styling. Next is Chunk 17, the app shell and restyle of those pages, then the products tables.

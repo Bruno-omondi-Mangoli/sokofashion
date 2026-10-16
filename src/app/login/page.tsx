@@ -1,6 +1,12 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
+import { Alert } from '@/components/ui/alert';
+import { AuthShell } from '@/components/ui/auth-shell';
+import { linkClasses } from '@/components/ui/button';
 import { signInAction } from '@/features/auth/actions';
 import { AuthForm } from '@/features/auth/auth-form';
+
+export const metadata: Metadata = { title: 'Log in' };
 
 type LoginPageProps = {
   searchParams: Promise<{ problem?: string }>;
@@ -10,14 +16,12 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const { problem } = await searchParams;
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-sm flex-col justify-center gap-6 p-6">
-      <h1 className="text-2xl font-semibold">Log in</h1>
-
+    <AuthShell title="Log in" saying={{ saying: 'Karibu tena.', meaning: 'Welcome back.' }}>
       {problem === 'confirm' ? (
-        <p role="alert" className="text-sm text-red-700">
+        <Alert tone="error">
           That link is invalid or has expired. If you already confirmed your email, log in below. If
           you were resetting your password, request a new link.
-        </p>
+        </Alert>
       ) : null}
 
       <AuthForm
@@ -26,18 +30,20 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         passwordAutoComplete="current-password"
       />
 
-      <p className="text-sm">
-        <Link href="/forgot-password" className="underline">
+      <div className="flex flex-col gap-1 text-base">
+        <Link
+          href="/forgot-password"
+          className={`${linkClasses} inline-flex min-h-11 items-center`}
+        >
           Forgot password?
         </Link>
-      </p>
-
-      <p className="text-sm">
-        New here?{' '}
-        <Link href="/signup" className="underline">
-          Create an account
-        </Link>
-      </p>
-    </main>
+        <p>
+          New here?{' '}
+          <Link href="/signup" className={linkClasses}>
+            Create an account
+          </Link>
+        </p>
+      </div>
+    </AuthShell>
   );
 }
