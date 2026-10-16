@@ -10,10 +10,18 @@ describe('confirmParamsSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('rejects a type that is not an email confirmation', () => {
+  it('accepts a password recovery link', () => {
     const result = confirmParamsSchema.safeParse({
       token_hash: 'abcdef1234567890',
       type: 'recovery',
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it('rejects a type that this route does not handle', () => {
+    const result = confirmParamsSchema.safeParse({
+      token_hash: 'abcdef1234567890',
+      type: 'magiclink',
     });
     expect(result.success).toBe(false);
   });

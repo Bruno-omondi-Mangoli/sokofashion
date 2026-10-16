@@ -1,6 +1,7 @@
 'use client';
 
 import { useActionState } from 'react';
+import { PasswordField } from './password-field';
 import { initialAuthFormState, type AuthFormState } from './types';
 
 type AuthFormProps = {
@@ -25,17 +26,7 @@ export function AuthForm({ action, submitLabel, passwordAutoComplete }: AuthForm
         />
       </label>
 
-      <label className="flex flex-col gap-1 text-sm font-medium">
-        Password
-        <input
-          name="password"
-          type="password"
-          autoComplete={passwordAutoComplete}
-          required
-          minLength={8}
-          className="min-h-12 rounded-md border border-neutral-400 px-3 text-base"
-        />
-      </label>
+      <PasswordField name="password" label="Password" autoComplete={passwordAutoComplete} />
 
       {state.error ? (
         <p role="alert" className="text-sm text-red-700">
