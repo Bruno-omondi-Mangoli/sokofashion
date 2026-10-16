@@ -1,6 +1,7 @@
 'use client';
 
 import { useId, useState } from 'react';
+import { fieldInputClasses } from '@/components/ui/text-field';
 
 type PasswordFieldProps = {
   name: string;
@@ -17,8 +18,8 @@ export function PasswordField({ name, label, autoComplete }: PasswordFieldProps)
   const [visible, setVisible] = useState(false);
 
   return (
-    <div className="flex flex-col gap-1">
-      <label htmlFor={inputId} className="text-sm font-medium">
+    <div className="flex flex-col gap-1.5">
+      <label htmlFor={inputId} className="text-ink text-sm font-semibold">
         {label}
       </label>
       <div className="flex gap-2">
@@ -33,13 +34,13 @@ export function PasswordField({ name, label, autoComplete }: PasswordFieldProps)
           autoCapitalize="none"
           autoCorrect="off"
           spellCheck={false}
-          className="min-h-12 min-w-0 flex-1 rounded-md border border-neutral-400 px-3 text-base"
+          className={`${fieldInputClasses(false)} min-w-0 flex-1`}
         />
         <button
           type="button"
           onClick={() => setVisible((current) => !current)}
           aria-label={visible ? 'Hide password' : 'Show password'}
-          className="min-h-12 min-w-16 rounded-md border border-neutral-400 px-3 text-sm font-medium"
+          className="border-primary text-primary hover:bg-sand min-h-12 min-w-20 rounded-lg border-2 px-3 text-sm font-semibold"
         >
           {visible ? 'Hide' : 'Show'}
         </button>

@@ -1,7 +1,11 @@
+import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
+import { AuthShell } from '@/components/ui/auth-shell';
 import { updatePasswordAction } from '@/features/auth/actions';
 import { ResetPasswordForm } from '@/features/auth/reset-password-form';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
+
+export const metadata: Metadata = { title: 'Choose a new password' };
 
 export default async function ResetPasswordPage() {
   const supabase = await createSupabaseServerClient();
@@ -13,9 +17,8 @@ export default async function ResetPasswordPage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-sm flex-col justify-center gap-6 p-6">
-      <h1 className="text-2xl font-semibold">Choose a new password</h1>
+    <AuthShell title="Choose a new password" intro="Use at least 8 characters.">
       <ResetPasswordForm action={updatePasswordAction} />
-    </main>
+    </AuthShell>
   );
 }

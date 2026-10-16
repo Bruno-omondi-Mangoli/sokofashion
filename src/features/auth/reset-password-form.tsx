@@ -1,6 +1,8 @@
 'use client';
 
 import { useActionState } from 'react';
+import { Alert } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import { PasswordField } from './password-field';
 import { initialAuthFormState, type AuthFormState } from './types';
 
@@ -12,7 +14,7 @@ export function ResetPasswordForm({ action }: ResetPasswordFormProps) {
   const [state, formAction, pending] = useActionState(action, initialAuthFormState);
 
   return (
-    <form action={formAction} className="flex flex-col gap-4">
+    <form action={formAction} className="flex flex-col gap-5">
       <PasswordField name="password" label="New password" autoComplete="new-password" />
       <PasswordField
         name="confirmPassword"
@@ -20,19 +22,11 @@ export function ResetPasswordForm({ action }: ResetPasswordFormProps) {
         autoComplete="new-password"
       />
 
-      {state.error ? (
-        <p role="alert" className="text-sm text-red-700">
-          {state.error}
-        </p>
-      ) : null}
+      {state.error ? <Alert tone="error">{state.error}</Alert> : null}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="min-h-12 rounded-md bg-neutral-900 px-4 text-base font-medium text-white disabled:opacity-60"
-      >
+      <Button type="submit" disabled={pending} className="w-full">
         {pending ? 'Saving' : 'Save new password'}
-      </button>
+      </Button>
     </form>
   );
 }
