@@ -37,6 +37,7 @@ const textPairs: Array<[string, string, number]> = [
   ['danger', 'danger-wash', 4.5],
   ['success', 'paper', 4.5],
   ['success', 'success-wash', 4.5],
+  ['ink', 'hairline', 4.5],
 ];
 
 /* Borders that must be visible, such as the edge of a form field. WCAG needs 3 to 1. */

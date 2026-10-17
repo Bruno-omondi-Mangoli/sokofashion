@@ -1,10 +1,10 @@
 # Progress Tracker
 
 Last updated: 16 October 2026
-Current phase: Phase 4 (design system first, then products)
-Current chunk: Chunk 16, design system (awaiting verification)
-Next chunk: Chunk 17, restyle dashboard, onboarding and team pages with an app shell
-After that: Chunk 18, categories, products and variants tables with RLS and isolation tests
+Current phase: Phase 4 (design system done, products next)
+Current chunk: Chunk 17, app shell and restyle of signed in pages (awaiting verification)
+Next chunk: Chunk 18, categories, products and variants tables with RLS and isolation tests
+After that: Chunk 19, product list and add product screens, Chunk 20, product photos with compression
 
 ## Phases
 
@@ -12,7 +12,7 @@ Phase 0: Product definition, user stories, success metrics: done pending friend 
 Phase 1: Tooling, accounts, Git and GitHub, repository, CI, scaffold: done
 Phase 2: Multi-tenant database, roles, RLS with isolation tests: done
 Phase 3: Authentication, onboarding, shop creation, staff invitations, email confirmation, password reset: done
-Phase 4: Design system, then products, variants, images, stock ledger: in progress
+Phase 4: Design system done, then products, variants, images, stock ledger: in progress
 Phase 5: Public storefront, cart, checkout: not started
 Phase 6: Seller payment recording and confirmation, provider interface: not started
 Phase 7: Orders, delivery, digital receipts, notifications: not started
@@ -43,16 +43,16 @@ Zero spend until the pilot is complete (D013, D014). Upgrade Vercel and Supabase
 
 - VS Code, Git, Git Bash, Node 24, npm 11: done and verified
 - GitHub account with two-factor: done
-- Next.js 16 project with TypeScript strict, Tailwind 4, ESLint, Prettier (Cache Components off): done
+- Next.js 16 project with TypeScript strict, Tailwind 4, ESLint, Prettier (Cache Components off, Tailwind loader kept in next.config.ts): done
 - Husky, lint-staged, commitlint, Dependabot: done
 - GitHub Actions CI with two jobs, Checks and Database tests: done
-- Zod, server-only, env validators, Vitest with 92 tests: done
+- Zod, server-only, env validators, Vitest with 94 tests: done
 - Docker Desktop, Supabase CLI as a dev dependency: done
 - Local database with shops, members, invitations, team functions, reserved slugs and a 3 shop limit, all with RLS: done
 - pgTAP tests in supabase/tests/database (72 checks), run locally and in CI: done
 - Bitwarden, Supabase account and organization, staging project linked, four migrations pushed: done
-- Auth: sign up, log in, log out, email confirmation, password show or hide, forgot and reset password, onboarding choice screen, dashboard, team page: done
-- Design system: tokens, fonts (Young Serif and Atkinson Hyperlegible Next), contrast helper and tests, core components, /design guide, restyled home and sign in pages: added in Chunk 16
+- Auth: sign up, log in, log out, email confirmation, password show or hide, forgot and reset password: done
+- Design system: tokens, fonts, contrast tests, components, AppShell, AuthShell, Badge, Card, loading, error and not found screens, /design guide: done
 - Supabase production project: not yet created (second free slot reserved)
 - Vercel account and project: not yet created
 - Custom SMTP and domain: not yet decided (D036)
@@ -92,6 +92,7 @@ Rule: staging holds fake data only.
 Rule: access decisions use supabase.auth.getUser on the server.
 Rule: important rules are enforced in the database, forms only help.
 Rule: colours, fonts and sizes come from design tokens, and every new colour pair is added to the contrast test.
+Rule: read a config file before replacing it. next.config.ts must keep the Tailwind loader (D042).
 Health check: http://localhost:3000/api/health
 
 ## Open questions
@@ -115,4 +116,4 @@ Health check: http://localhost:3000/api/health
 
 ## Notes for the next chat
 
-Chunk 15b verified. Chunk 16 delivered: kanga inspired design system (pindo border band, kanga frame, ujumbe sayings), tokens in globals.css, fonts Young Serif and Atkinson Hyperlegible Next, WCAG contrast helper and 30 new tests (92 total), components in src/components/ui, restyled home and sign in pages, /design guide hidden in production, docs/design-system.md. Dashboard, onboarding and team pages still use the old plain styling. Next is Chunk 17, the app shell and restyle of those pages, then the products tables.
+Chunk 16 had a bug: next.config.ts lost the Tailwind loader in Chunk 12, which removed all styling. Fixed with the loader restored and a guard test (D042). Chunk 17 delivered: AppShell, Badge, Card, SelectField, restyled dashboard, onboarding and team pages, invitation card and forms, dashboard loading screen, global error and not found screens, 94 unit tests. Next is the products data model: categories, products, variants, with RLS, isolation tests and a stock movement ledger plan.

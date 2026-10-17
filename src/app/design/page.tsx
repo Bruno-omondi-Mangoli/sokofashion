@@ -8,6 +8,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { TextField } from '@/components/ui/text-field';
 import { cn } from '@/lib/cn';
 import { serverEnv } from '@/lib/env/server';
+import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
 
 export const metadata: Metadata = {
   title: 'Design guide',
@@ -117,6 +119,20 @@ export default function DesignPage() {
           <Alert tone="success">Your product is saved.</Alert>
           <Alert tone="error">That did not work. Check your connection and try again.</Alert>
           <Alert tone="info">Your free plan includes 20 products.</Alert>
+        </section>
+
+        <section className="flex flex-col gap-4">
+          <h2 className="font-display text-title">Labels and cards</h2>
+          <div className="flex flex-wrap gap-2">
+            <Badge tone="owner">Owner</Badge>
+            <Badge tone="manager">Manager</Badge>
+            <Badge tone="attendant">Attendant</Badge>
+            <Badge tone="muted">Access removed</Badge>
+          </div>
+          <Card>
+            <p className="text-base font-semibold">A card groups related content.</p>
+            <p className="text-ink-soft text-sm">Use one card per shop, person or order.</p>
+          </Card>
         </section>
 
         <section className="flex flex-col gap-4">
