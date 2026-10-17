@@ -14,6 +14,7 @@ The interface borrows from the parts of a kanga cloth. The pindo is the woven bo
 - Motion is rare. The only motion is the border weaving in once on the home page, plus small press feedback on buttons. Respect reduced motion.
 - Errors say what went wrong and how to fix it. Empty screens say what to do next. Buttons name the action, such as Save changes.
 - Use full class names in components. Class names built from pieces, such as bg- plus a variable, are not generated.
+- Signed in pages use AppShell. Sign in pages use AuthShell. Group related content in a Card, show roles and statuses with a Badge, and give every page a loading, error and not found fallback.
 
 ## Two moods
 

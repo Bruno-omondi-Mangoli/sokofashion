@@ -1,5 +1,11 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import { Alert } from '@/components/ui/alert';
+import { AppShell } from '@/components/ui/app-shell';
+import { Badge } from '@/components/ui/badge';
+import { buttonClasses } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { signOutAction } from '@/features/auth/actions';
 import { getMyShops } from '@/features/shops/queries';
 import { PendingInvitations } from '@/features/staff/pending-invitations';
@@ -7,6 +13,8 @@ import { getMyPendingInvitations } from '@/features/staff/queries';
 import { roleLabels } from '@/features/staff/types';
 import { publicEnv } from '@/lib/env/public';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
+
+export const metadata: Metadata = { title: 'Your shops' };
 
 type DashboardPageProps = {
   searchParams: Promise<{ problem?: string }>;
@@ -35,47 +43,39 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const invitations = await getMyPendingInvitations(supabase);
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center gap-6 p-6">
-      <h1 className="text-2xl font-semibold">Dashboard</h1>
-      <p className="text-base">Signed in as {data.user.email}</p>
-
+    <AppShell title="Your shops" userEmail={data.user.email ?? ''} signOut={signOutAction}>
       {problem === 'invite' ? (
-        <p role="alert" className="text-sm text-red-700">
+        <Alert tone="error">
           That invitation could not be accepted. Ask the owner to send it again.
-        </p>
+        </Alert>
       ) : null}
 
       <PendingInvitations invitations={invitations} />
 
       <ul className="flex flex-col gap-4">
         {shops.map((shop) => (
-          <li
-            key={shop.id}
-            className="flex flex-col gap-2 rounded-md border border-neutral-300 p-4"
-          >
-            <p className="text-lg font-medium">{shop.name}</p>
-            <p className="text-sm text-neutral-700">Your role: {roleLabels[shop.role]}</p>
-            <p className="text-sm text-neutral-700">
-              Your shop link: {publicEnv.NEXT_PUBLIC_APP_URL}/{shop.slug}
-            </p>
-            <p className="text-sm text-neutral-700">The public storefront is coming soon.</p>
-            {shop.role === 'owner' ? (
-              <Link href={`/dashboard/team/${shop.slug}`} className="text-base underline">
-                Manage team
-              </Link>
-            ) : null}
+          <li key={shop.id}>
+            <Card>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <h2 className="font-display text-title text-ink">{shop.name}</h2>
+                <Badge tone={shop.role}>{roleLabels[shop.role]}</Badge>
+              </div>
+              <p className="text-ink-soft text-sm break-all">
+                Shop link: {publicEnv.NEXT_PUBLIC_APP_URL}/{shop.slug}
+              </p>
+              <p className="text-ink-soft text-sm">The public storefront is coming soon.</p>
+              {shop.role === 'owner' ? (
+                <Link
+                  href={`/dashboard/team/${shop.slug}`}
+                  className={buttonClasses('secondary', 'w-full sm:w-auto')}
+                >
+                  Manage team
+                </Link>
+              ) : null}
+            </Card>
           </li>
         ))}
       </ul>
-
-      <form action={signOutAction}>
-        <button
-          type="submit"
-          className="min-h-12 rounded-md border border-neutral-900 px-4 text-base font-medium"
-        >
-          Sign out
-        </button>
-      </form>
-    </main>
+    </AppShell>
   );
 }

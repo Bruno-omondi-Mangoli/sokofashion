@@ -1,6 +1,10 @@
 'use client';
 
 import { useActionState, useState } from 'react';
+import { Alert } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { SelectField } from '@/components/ui/select-field';
+import { TextField } from '@/components/ui/text-field';
 import { slugify } from './slug';
 import { initialShopFormState, type Country, type ShopFormState } from './types';
 
@@ -31,71 +35,52 @@ export function CreateShopForm({ action, countries, appUrl }: CreateShopFormProp
   }
 
   return (
-    <form action={formAction} className="flex flex-col gap-4">
-      <label className="flex flex-col gap-1 text-sm font-medium">
-        Shop name
-        <input
-          name="name"
-          type="text"
-          required
-          minLength={2}
-          maxLength={80}
-          value={name}
-          onChange={(event) => handleNameChange(event.target.value)}
-          className="min-h-12 rounded-md border border-neutral-400 px-3 text-base"
-        />
-      </label>
+    <form action={formAction} className="flex flex-col gap-5">
+      <TextField
+        label="Shop name"
+        name="name"
+        type="text"
+        required
+        minLength={2}
+        maxLength={80}
+        value={name}
+        onChange={(event) => handleNameChange(event.target.value)}
+      />
 
-      <label className="flex flex-col gap-1 text-sm font-medium">
-        Link name
-        <input
-          name="slug"
-          type="text"
-          required
-          minLength={3}
-          maxLength={40}
-          autoCapitalize="none"
-          autoCorrect="off"
-          spellCheck={false}
-          value={slug}
-          onChange={(event) => handleSlugChange(event.target.value)}
-          className="min-h-12 rounded-md border border-neutral-400 px-3 text-base"
-        />
-        <span className="text-xs font-normal text-neutral-700">
-          Your shop link will be {appUrl}/{slug || 'your-shop'}
-        </span>
-      </label>
+      <TextField
+        label="Link name"
+        name="slug"
+        type="text"
+        required
+        minLength={3}
+        maxLength={40}
+        autoCapitalize="none"
+        autoCorrect="off"
+        spellCheck={false}
+        value={slug}
+        onChange={(event) => handleSlugChange(event.target.value)}
+        hint={`Your shop link will be ${appUrl}/${slug || 'your-shop'}`}
+      />
 
-      <label className="flex flex-col gap-1 text-sm font-medium">
-        Country
-        <select
-          name="countryCode"
-          required
-          value={countryCode}
-          onChange={(event) => setCountryCode(event.target.value)}
-          className="min-h-12 rounded-md border border-neutral-400 bg-white px-3 text-base"
-        >
-          {countries.map((country) => (
-            <option key={country.code} value={country.code}>
-              {country.name}
-            </option>
-          ))}
-        </select>
-      </label>
-
-      {state.error ? (
-        <p role="alert" className="text-sm text-red-700">
-          {state.error}
-        </p>
-      ) : null}
-
-      <button
-        type="submit"
-        disabled={pending || countries.length === 0}
-        className="min-h-12 rounded-md bg-neutral-900 px-4 text-base font-medium text-white disabled:opacity-60"
+      <SelectField
+        label="Country"
+        name="countryCode"
+        required
+        value={countryCode}
+        onChange={(event) => setCountryCode(event.target.value)}
       >
+        {countries.map((country) => (
+          <option key={country.code} value={country.code}>
+            {country.name}
+          </option>
+        ))}
+      </SelectField>
+
+      {state.error ? <Alert tone="error">{state.error}</Alert> : null}
+
+      <Button type="submit" disabled={pending || countries.length === 0} className="w-full">
         {pending ? 'Creating your shop' : 'Create my shop'}
-      </button>
+      </Button>
     </form>
   );
 }

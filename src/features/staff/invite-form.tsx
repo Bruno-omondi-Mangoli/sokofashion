@@ -1,6 +1,10 @@
 'use client';
 
 import { useActionState } from 'react';
+import { Alert } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { SelectField } from '@/components/ui/select-field';
+import { TextField } from '@/components/ui/text-field';
 import { initialInviteFormState, type InviteFormState } from './types';
 
 type InviteFormProps = {
@@ -13,52 +17,29 @@ export function InviteForm({ action, shopId, slug }: InviteFormProps) {
   const [state, formAction, pending] = useActionState(action, initialInviteFormState);
 
   return (
-    <form action={formAction} className="flex flex-col gap-4">
+    <form action={formAction} className="flex flex-col gap-5">
       <input type="hidden" name="shopId" value={shopId} />
       <input type="hidden" name="slug" value={slug} />
 
-      <label className="flex flex-col gap-1 text-sm font-medium">
-        Email of the person to invite
-        <input
-          name="email"
-          type="email"
-          autoComplete="off"
-          required
-          className="min-h-12 rounded-md border border-neutral-400 px-3 text-base"
-        />
-      </label>
+      <TextField
+        label="Email of the person to invite"
+        name="email"
+        type="email"
+        autoComplete="off"
+        required
+      />
 
-      <label className="flex flex-col gap-1 text-sm font-medium">
-        Role
-        <select
-          name="role"
-          defaultValue="attendant"
-          className="min-h-12 rounded-md border border-neutral-400 bg-white px-3 text-base"
-        >
-          <option value="attendant">Attendant</option>
-          <option value="manager">Manager</option>
-        </select>
-      </label>
+      <SelectField label="Role" name="role" defaultValue="attendant">
+        <option value="attendant">Attendant</option>
+        <option value="manager">Manager</option>
+      </SelectField>
 
-      {state.error ? (
-        <p role="alert" className="text-sm text-red-700">
-          {state.error}
-        </p>
-      ) : null}
+      {state.error ? <Alert tone="error">{state.error}</Alert> : null}
+      {state.notice ? <Alert tone="success">{state.notice}</Alert> : null}
 
-      {state.notice ? (
-        <p role="status" className="text-sm text-green-800">
-          {state.notice}
-        </p>
-      ) : null}
-
-      <button
-        type="submit"
-        disabled={pending}
-        className="min-h-12 rounded-md bg-neutral-900 px-4 text-base font-medium text-white disabled:opacity-60"
-      >
+      <Button type="submit" disabled={pending} className="w-full">
         {pending ? 'Saving' : 'Send invitation'}
-      </button>
+      </Button>
     </form>
   );
 }

@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import { acceptInvitationAction } from './actions';
 import { roleLabels, type PendingInvitation } from './types';
 
@@ -13,25 +14,22 @@ export function PendingInvitations({ invitations }: PendingInvitationsProps) {
   return (
     <section
       aria-labelledby="invitations-heading"
-      className="flex flex-col gap-3 rounded-md border border-neutral-900 p-4"
+      className="bg-paper border-primary flex flex-col gap-4 rounded-xl border-2 p-5"
     >
-      <h2 id="invitations-heading" className="text-lg font-semibold">
+      <h2 id="invitations-heading" className="font-display text-title text-ink">
         You have been invited
       </h2>
-      <ul className="flex flex-col gap-3">
+      <ul className="flex flex-col gap-4">
         {invitations.map((invitation) => (
-          <li key={invitation.id} className="flex flex-col gap-2">
+          <li key={invitation.id} className="flex flex-col gap-3">
             <p className="text-base">
               Join <strong>{invitation.shopName}</strong> as {roleLabels[invitation.role]}
             </p>
             <form action={acceptInvitationAction}>
               <input type="hidden" name="invitationId" value={invitation.id} />
-              <button
-                type="submit"
-                className="min-h-12 rounded-md bg-neutral-900 px-4 text-base font-medium text-white"
-              >
+              <Button type="submit" className="w-full sm:w-auto">
                 Accept invitation
-              </button>
+              </Button>
             </form>
           </li>
         ))}
