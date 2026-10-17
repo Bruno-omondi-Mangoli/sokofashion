@@ -72,3 +72,40 @@ Row Level Security: owners can read the invitations of their shop. Nobody can wr
 - set_staff_member_active(member_id, make_active): owner only, owners cannot be deactivated
 - list_shop_staff(shop_id): owner only, returns the team with emails
 - my_pending_invitations(): the caller's open invitations, empty unless their email is confirmed
+
+## categories
+
+Platform wide reference data: clothes, shoes, bags, cosmetics, with English and Swahili names. No shop_id. Everyone can read, nobody can write through the API.
+
+## products
+
+One row per item a shop sells.
+
+- id, shop_id, category_code
+- name, description
+- price_minor: whole number in the smallest unit, 0 to 100000000, so 1500 shillings is 150000
+- currency_code: copied from the shop by the database, never chosen by the caller
+- status: draft, active or archived
+- created_by (set by the database), created_at, updated_at
+- at most 1000 products per shop until plan limits exist
+
+Row Level Security: members of the shop can read. Owners and managers can insert and update name, description, category, price and status. Attendants can only read. Nobody can delete. A product is archived instead.
+
+## product_variants
+
+One row per way a product is sold. Every product has at least one variant. Stock is counted per variant.
+
+- id, shop_id, product_id (shop_id and product_id must match the product, enforced by a composite foreign key)
+- sku: the seller's own code, unique within a shop, optional
+- size, colour, shade: optional text options
+- volume_ml, expires_on: optional, for cosmetics
+- price_minor: optional override, empty means the product price applies
+- is_active
+- the same combination of options cannot appear twice for one product, ignoring letter case
+- at most 50 variants per product
+
+Row Level Security: same as products.
+
+## Catalogue function
+
+- create_product(shop_id, name, category, price_minor, description, status, variants): creates a product and its variants together. Runs with the caller's rights, so Row Level Security applies.
