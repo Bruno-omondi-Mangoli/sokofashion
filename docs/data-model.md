@@ -109,3 +109,27 @@ Row Level Security: same as products.
 ## Catalogue function
 
 - create_product(shop_id, name, category, price_minor, description, status, variants): creates a product and its variants together. Runs with the caller's rights, so Row Level Security applies.
+
+## stock_movements
+
+The stock ledger. Append only: rows are never edited or deleted.
+
+- id, shop_id, variant_id (shop_id and variant_id must match the variant, enforced by a composite foreign key)
+- quantity_change: whole number, not zero, between minus 100000 and plus 100000
+- reason: opening, restock, sale, sale_return, adjustment, damage or reversal
+- note: optional, up to 200 characters
+- reverses_id: set only on reversal rows, and a movement can be reversed once
+- created_by (set by the database), created_at
+- sign rule: opening, restock and sale_return add stock, sale and damage remove it
+- stock can never go below zero, enforced by a trigger with a lock per variant
+
+Row Level Security: members of the shop can read. Nobody can insert, update or delete through the API. Changes go through the functions below.
+
+## variant_stock
+
+A view that gives on_hand for every variant, calculated as the sum of its movements. Variants with no movements show 0. It runs with the caller's rights, so a shop only sees its own stock.
+
+## Stock functions
+
+- record_stock_movement(variant_id, amount, reason, note): owners and managers only. Accepts opening, restock, adjustment, damage and sale_return. Sales are written by the order functions.
+- reverse_stock_movement(movement_id, note): owners and managers only. Adds the opposite movement. Reversals cannot be reversed, and sales are reversed by cancelling the order.
