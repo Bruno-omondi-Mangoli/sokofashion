@@ -133,3 +133,7 @@ A view that gives on_hand for every variant, calculated as the sum of its moveme
 
 - record_stock_movement(variant_id, amount, reason, note): owners and managers only. Accepts opening, restock, adjustment, damage and sale_return. Sales are written by the order functions.
 - reverse_stock_movement(movement_id, note): owners and managers only. Adds the opposite movement. Reversals cannot be reversed, and sales are reversed by cancelling the order.
+
+## create_product update
+
+create_product now accepts an optional opening_stock for each variant in the list, a whole number from 0 to 100000. For every variant with more than 0, an opening movement is recorded in the stock ledger in the same transaction. If any part fails, nothing is saved. Opening stock is recorded by the same person who creates the product.
