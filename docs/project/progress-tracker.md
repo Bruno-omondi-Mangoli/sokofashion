@@ -2,9 +2,9 @@
 
 Last updated: 18 October 2026
 Current phase: Phase 4 (products, variants, images, stock ledger)
-Current chunk: Chunk 19, stock ledger (awaiting verification)
-Next chunk: Chunk 20, generated database types and the product screens: product list, add and edit product with a sizes times colours grid and opening stock
-After that: Chunk 21, product photos (1 to 4, at least 1) with compression and several angles
+Current chunk: Chunk 20, product screens (awaiting verification)
+Next chunk: Chunk 21, product photos: 1 to 4 per product, at least 1 to go live, compression, storage and publishing
+After that: Chunk 22, edit product, restock and stock correction screens, archive. Then Phase 4 is complete.
 
 ## Phases
 
@@ -12,7 +12,7 @@ Phase 0: Product definition, user stories, success metrics: done pending friend 
 Phase 1: Tooling, accounts, Git and GitHub, repository, CI, scaffold: done
 Phase 2: Multi-tenant database, roles, RLS with isolation tests: done
 Phase 3: Authentication, onboarding, shop creation, staff invitations, email confirmation, password reset: done
-Phase 4: Design system, catalogue tables and stock ledger done, then screens and photos: in progress
+Phase 4: Design system, catalogue, stock ledger and add product screens done, then photos and stock screens: in progress
 Phase 5: Public storefront, cart, checkout: not started
 Phase 6: Seller payment recording and confirmation, provider interface: not started
 Phase 7: Orders, delivery, digital receipts, notifications: not started
@@ -37,7 +37,7 @@ Zero spend until the pilot is complete (D013, D014). Upgrade Vercel and Supabase
 
 ## Pilot shops
 
-5 friends selling women's clothes, shoes and handbags. All five have one staff member each. Payments by cash and M-Pesa (Paybill, Buy Goods Till, Pochi la Biashara). Clothes come in sizes and colours together (for example Small, Large, Extra large). Each item has one to four photos, and the seller decides how many, with at least one. Storefront must show products from several angles.
+5 friends selling women's clothes, shoes and handbags. All five have one staff member each. Payments by cash and M-Pesa (Paybill, Buy Goods Till, Pochi la Biashara). Clothes come in sizes and colours together. Each item has one to four photos, and the seller decides how many, with at least one. Storefront must show products from several angles.
 
 ## Accounts and tools set up
 
@@ -46,12 +46,13 @@ Zero spend until the pilot is complete (D013, D014). Upgrade Vercel and Supabase
 - Next.js 16 project with TypeScript strict, Tailwind 4, ESLint, Prettier (Cache Components off, Tailwind loader kept in next.config.ts): done
 - Husky, lint-staged, commitlint, Dependabot: done
 - GitHub Actions CI with two jobs, Checks and Database tests: done
-- Zod, server-only, env validators, Vitest with 94 tests: done
+- Zod, server-only, env validators, Vitest with 128 tests: done
 - Docker Desktop, Supabase CLI as a dev dependency: done
-- Local database: countries, shops, members, invitations, team functions, categories, products, product_variants, create_product, stock_movements, variant_stock, stock functions, all with RLS: done
-- pgTAP tests in supabase/tests/database (146 checks in 6 files), run locally and in CI: done
-- Bitwarden, Supabase account and organization, staging project linked, six migrations pushed: done in Chunk 19
+- Local database: shops, members, invitations, categories, products, variants, stock ledger, create_product with opening stock, all with RLS: done
+- pgTAP tests in supabase/tests/database (161 checks in 7 files), run locally and in CI: done
+- Bitwarden, Supabase account and organization, staging project linked, seven migrations pushed: done in Chunk 20
 - Auth screens, design system, AppShell, dashboard, onboarding, team page: done
+- Product list and add product form (src/features/catalogue), money and variant helpers: done in Chunk 20
 - Supabase production project: not yet created (second free slot reserved)
 - Vercel account and project: not yet created
 - Custom SMTP and domain: not yet decided (D036)
@@ -89,11 +90,12 @@ Rule: auth settings on staging and production are changed in the dashboard and l
 Rule: create files in Git Bash with touch or mkdir, write content in VS Code.
 Rule: every new shop-owned table ships with isolation tests.
 Rule: staging holds fake data only.
-Rule: access decisions use supabase.auth.getUser on the server.
+Rule: access decisions use supabase.auth.getUser on the server, and shop and role come from the database, never from a form.
 Rule: important rules are enforced in the database, forms only help.
 Rule: colours, fonts and sizes come from design tokens, and every new colour pair is added to the contrast test.
 Rule: read a config file before replacing it. next.config.ts must keep the Tailwind loader (D042).
 Rule: stock is only ever changed by adding ledger rows through the functions, never by editing.
+Rule: database results are checked with Zod before the app uses them (D051).
 Health check: http://localhost:3000/api/health
 
 ## Open questions
@@ -106,20 +108,21 @@ Health check: http://localhost:3000/api/health
 - Staging email templates (confirmation and recovery) are locked until custom SMTP exists. Apply supabase/templates files in Phase 12.
 - A Swahili speaker must confirm all Swahili text, including category names, before the pilot (D041)
 - Photo storage budget: Supabase free storage is about 1 GB, so photos must be compressed hard, and the cost at 100 and 1000 shops must be rechecked in Chunk 21
-- Owner feedback on how the new look feels, to adjust tokens
+- Owner feedback on how the new look and the add product form feel
 - Dark mode: revisit in Phase 11
 - Price changes and stock write offs are not alerted on yet, the audit trail and alerts come in Phase 9
 - VAT and eTIMS handling of prices: ask an accountant before Phase 7
 - Cosmetics expiry and labelling rules: ask a lawyer or KEBS before the pilot
-- Expiry date is per variant for now, per batch later if sellers need it
+- Per variant prices exist in the database but the screens use one price per product
+- The product list shows the newest 100 products only, add paging if a shop passes that
 - Confirm Pochi la Biashara details in Phase 6
 - CAPTCHA, leaked password protection and stronger rate limits (Phase 11)
 - A change password option for logged in users: add on a settings page later
-- Team size limit of 10 and the catalogue limits should later come from plan limits in the database
+- Team size limit and the catalogue limits should later come from plan limits in the database
 - Phone number login for sellers: needs a paid SMS provider, revisit after the pilot
-- Generated TypeScript types for the database: add at the start of Chunk 20
-- Lawyer questions for Phase 12: foreign Supabase region and Privacy Policy wording, collecting emails, ODPC registration, trademark and impersonation clause, controller and processor roles for staff data, data processing agreement with the email provider, font licences, staff activity records and retention
+- Generated TypeScript types for the database: deferred, results are checked with Zod instead (D051), revisit in Phase 11
+- Lawyer questions for Phase 12: foreign Supabase region and Privacy Policy wording, collecting emails, ODPC registration, trademark and impersonation clause, prohibited and counterfeit goods clause, controller and processor roles for staff data, data processing agreement with the email provider, font licences, staff activity records and retention
 
 ## Notes for the next chat
 
-Chunk 18 verified and merged. New pilot facts: clothes have sizes and colours together, and each item has 1 to 4 photos with at least one (D048, D049). Chunk 19 delivered: migration stock_ledger (unique shop_id and id on variants, stock_reason enum, append only stock_movements with sign, range, reversal and non negative rules, variant_stock security invoker view, record_stock_movement and reverse_stock_movement), pgTAP file stock.test.sql (35 checks, 146 in total). The approval workflow for staff stock adjustments is deferred to Phase 9 (D050). Next is generated types and the product screens.
+Chunk 19 verified and merged. Chunk 20 delivered: migration product_opening_stock (create_product records opening stock atomically), pgTAP file product_opening_stock.test.sql (15 checks, 161 in total), src/features/catalogue (money, variants, schemas, queries, action, product form), src/config/catalogue.ts presets, Chip and TextAreaField components, new Badge tones, product list page and add product page under /dashboard/products/[slug], Products button on the dashboard, 34 new unit tests (128 in total). New products are saved as drafts. Next is photos: storage bucket, product_images table with 1 to 4 photos per product, at least 1 required to go live, compression on upload.

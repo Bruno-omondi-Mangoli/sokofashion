@@ -64,14 +64,22 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                 Shop link: {publicEnv.NEXT_PUBLIC_APP_URL}/{shop.slug}
               </p>
               <p className="text-ink-soft text-sm">The public storefront is coming soon.</p>
-              {shop.role === 'owner' ? (
+              <div className="flex flex-col gap-2 sm:flex-row">
                 <Link
-                  href={`/dashboard/team/${shop.slug}`}
-                  className={buttonClasses('secondary', 'w-full sm:w-auto')}
+                  href={`/dashboard/products/${shop.slug}`}
+                  className={buttonClasses('primary', 'w-full sm:w-auto')}
                 >
-                  Manage team
+                  Products
                 </Link>
-              ) : null}
+                {shop.role === 'owner' ? (
+                  <Link
+                    href={`/dashboard/team/${shop.slug}`}
+                    className={buttonClasses('secondary', 'w-full sm:w-auto')}
+                  >
+                    Manage team
+                  </Link>
+                ) : null}
+              </div>
             </Card>
           </li>
         ))}
