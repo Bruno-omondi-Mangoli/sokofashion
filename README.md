@@ -42,3 +42,5 @@ Next.js (App Router), TypeScript in strict mode, Tailwind CSS, Supabase (Postgre
 Run Docker Desktop, then `npm run db:start`. Studio runs at http://127.0.0.1:54323. Use `npm run db:reset` to rebuild the local database from migrations. Change the database only through new migration files.
 
 - Every new table that belongs to a shop must come with isolation tests in `supabase/tests/database` that try to read and change another shop's data.
+
+Run `npm run db:fresh` to reset the local database and load sample data. It creates the accounts owner1, owner2, owner3 and attendant1 at example.test, all with the password Password123!, plus three sample shops. It refuses to run against anything except the local database. It needs SUPABASE_SERVICE_ROLE_KEY from `npm run db:status` in `.env.local`.
