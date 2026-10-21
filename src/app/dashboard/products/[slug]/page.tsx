@@ -122,7 +122,7 @@ export default async function ProductsPage({ params, searchParams }: ProductsPag
                           height={80}
                           loading="lazy"
                           decoding="async"
-                          className="size-full object-cover"
+                          className="size-full object-contain"
                         />
                       ) : null}
                     </div>

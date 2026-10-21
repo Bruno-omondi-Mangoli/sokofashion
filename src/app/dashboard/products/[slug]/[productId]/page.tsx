@@ -14,6 +14,7 @@ import { statusLabels, type ProductStatus } from '@/features/catalogue/types';
 import { setProductStatusAction } from '@/features/photos/actions';
 import { MAX_PHOTOS_PER_PRODUCT } from '@/features/photos/paths';
 import { PhotoManager } from '@/features/photos/photo-manager';
+import { PhotoTile } from '@/features/photos/photo-tile';
 import { getProductPhotos } from '@/features/photos/queries';
 import { publicPhotoUrl } from '@/features/photos/urls';
 import { getMyShops } from '@/features/shops/queries';
@@ -66,6 +67,9 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
   const photoViews = photos.map((photo) => ({
     id: photo.id,
     thumbUrl: publicPhotoUrl(photo.thumbPath),
+    mainUrl: publicPhotoUrl(photo.path),
+    width: photo.width,
+    height: photo.height,
   }));
 
   return (
@@ -117,19 +121,10 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
         ) : photoViews.length === 0 ? (
           <p className="text-ink-soft text-base">There are no photos yet.</p>
         ) : (
-          <ul className="grid grid-cols-2 gap-3">
+          <ul className="grid grid-cols-2 items-start gap-3">
             {photoViews.map((photo, index) => (
               <li key={photo.id}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={photo.thumbUrl}
-                  alt={`Photo ${index + 1} of ${product.name}`}
-                  width={400}
-                  height={400}
-                  loading="lazy"
-                  decoding="async"
-                  className="bg-hairline aspect-square w-full rounded-lg object-cover"
-                />
+                <PhotoTile photo={photo} label={`Photo ${index + 1} of ${product.name}`} />
               </li>
             ))}
           </ul>

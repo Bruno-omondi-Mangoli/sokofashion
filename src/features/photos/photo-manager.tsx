@@ -8,11 +8,7 @@ import { createSupabaseBrowserClient } from '@/lib/supabase/browser';
 import { registerPhotoAction, removePhotoAction } from './actions';
 import { compressPhoto, PhotoError } from './compress';
 import { buildPhotoPaths, MAX_PHOTOS_PER_PRODUCT, PHOTO_BUCKET } from './paths';
-
-export type PhotoView = {
-  id: string;
-  thumbUrl: string;
-};
+import { PhotoTile, type PhotoView } from './photo-tile';
 
 type PhotoManagerProps = {
   shopId: string;
@@ -137,21 +133,10 @@ export function PhotoManager({ shopId, slug, productId, productName, photos }: P
       </p>
 
       {photos.length > 0 ? (
-        <ul className="grid grid-cols-2 gap-3">
+        <ul className="grid grid-cols-2 items-start gap-3">
           {photos.map((photo, index) => (
             <li key={photo.id} className="flex flex-col gap-2">
-              {/* A plain img is used on purpose. The photo is already small, and Next.js image
-                  optimisation would add cost and settings we do not need. */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={photo.thumbUrl}
-                alt={`Photo ${index + 1} of ${productName}`}
-                width={400}
-                height={400}
-                loading="lazy"
-                decoding="async"
-                className="bg-hairline aspect-square w-full rounded-lg object-cover"
-              />
+              <PhotoTile photo={photo} label={`Photo ${index + 1} of ${productName}`} />
               {confirmingId === photo.id ? (
                 <div className="flex gap-2">
                   <Button
