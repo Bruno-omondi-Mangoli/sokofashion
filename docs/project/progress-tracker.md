@@ -2,7 +2,7 @@
 
 Last updated: 19 October 2026
 Current phase: Phase 4 (products, variants, images, stock ledger)
-Current chunk: Chunk 21, product photos (awaiting verification)
+Current chunk: Chunk 21b, whole photos and the trigger check (awaiting verification)
 Next chunk: Chunk 22, edit product, restock and stock correction screens, archive. Then Phase 4 is complete.
 After that: Phase 5, the public shop page for each seller, then the shared browse page across shops (D053, confirmed)
 
@@ -37,7 +37,7 @@ Zero spend until the pilot is complete (D013, D014). Upgrade Vercel and Supabase
 
 ## Pilot shops
 
-5 friends selling women's clothes, shoes and handbags. All five have one staff member each. Payments by cash and M-Pesa (Paybill, Buy Goods Till, Pochi la Biashara). Clothes come in sizes and colours together. Each item has one to four photos, and the seller decides how many, with at least one. Storefront must show products from several angles. The friends want a shared page where customers browse products from all five shops, then check out with the shop that owns the product (D053, confirmed).
+5 friends selling women's clothes, shoes and handbags. All five have one staff member each. Payments by cash and M-Pesa (Paybill, Buy Goods Till, Pochi la Biashara). Clothes come in sizes and colours together. Each item has one to four photos, and the seller decides how many, with at least one. Photos must be shown whole, never cropped (D059). Storefront must show products from several angles. The friends want a shared page where customers browse products from all five shops, then check out with the shop that owns the product (D053, confirmed).
 
 ## Accounts and tools set up
 
@@ -46,12 +46,12 @@ Zero spend until the pilot is complete (D013, D014). Upgrade Vercel and Supabase
 - Next.js 16 project with TypeScript strict, Tailwind 4, ESLint, Prettier (Cache Components off, Tailwind loader kept in next.config.ts): done
 - Husky, lint-staged, commitlint, Dependabot: done
 - GitHub Actions CI with two jobs, Checks and Database tests: done
-- Zod, server-only, env validators, Vitest with 149 tests: done
+- Zod, server-only, env validators, Vitest with 150 tests: done
 - Docker Desktop, Supabase CLI as a dev dependency: done
 - Local database: shops, members, invitations, categories, products, variants, stock ledger, product photos and storage bucket, all with RLS: done
 - pgTAP tests in supabase/tests/database (203 checks in 8 files), run locally and in CI: done
-- Bitwarden, Supabase account and organization, staging project linked, eight migrations pushed: done in Chunk 21
-- Auth screens, design system, AppShell, dashboard, onboarding, team page, product list, add product form, product page with photos: done
+- Bitwarden, Supabase account and organization, staging project linked, eight migrations pushed: done
+- Auth screens, design system, AppShell, dashboard, onboarding, team page, product list, add product form, product page with photos shown whole: done
 - Development seed: npm run db:seed and npm run db:fresh, local only: done
 - Supabase production project: not yet created (second free slot reserved)
 - Vercel account and project: not yet created
@@ -65,10 +65,11 @@ Windows 11 Pro, 16 GB RAM, Ryzen 7 Pro, SSD with 200 GB free. Virtualization ena
 ## Key facts from the build
 
 Repository URL: https://github.com/Bruno-omondi-Mangoli/sokofashion
-Local Studio: http://127.0.0.1:54323
+Local Studio: http://127.0.0.1:54323 (the cloud dashboard address starts with supabase.com, do not mix them up)
 Local fake inbox (confirmation emails): http://127.0.0.1:54324
 Local app address: http://localhost:3000 (always use localhost, not 127.0.0.1)
 Design guide: http://localhost:3000/design (hidden in production)
+Local database container: supabase_db_sokofashion (check with docker ps)
 Local test accounts after npm run db:fresh: owner1, owner2, owner3 and attendant1 at example.test, password Password123!
 Account note: npm run db:reset deletes all local accounts, run npm run db:fresh instead.
 Photo bucket: product-images (public read, 500 KB per file, WebP and JPEG only)
@@ -103,10 +104,13 @@ Rule: stock is only ever changed by adding ledger rows through the functions, ne
 Rule: database results are checked with Zod before the app uses them (D051).
 Rule: the seed script only ever runs locally (D054).
 Rule: photo file names are built by the database and the app, never chosen by the browser (D055).
+Rule: photos are never cropped, and a test guards it (D059).
+Rule: a break it on purpose check must first prove the break took effect (D060).
 Health check: http://localhost:3000/api/health
 
 ## Open questions
 
+- Result of the trigger check from Chunk 21b: did the go live checks fail once the trigger showed D, and was staging affected
 - Final product name (SokoFashion is the project name, DukaLink is the provisional product name)
 - Payment gateway for launch (Phase 6)
 - Plan prices after talking to the 5 pilot friends and a few strangers
@@ -136,4 +140,4 @@ Health check: http://localhost:3000/api/health
 
 ## Notes for the next chat
 
-Chunk 20b verified. D053 confirmed by the owner: the shared browse page comes right after the single shop storefront, each shop opts in, and checkout stays per shop. Chunk 21 delivered: migration product_photos (public product-images bucket with 500 KB and WebP or JPEG limits, product_images table with slots 1 to 4, storage policies built on can_manage_product_image, add_product_image and remove_product_image, go live rule trigger, 100 MB per shop cap), pgTAP file product_photos.test.sql (42 checks, 203 in total), two older test files edited so their products are drafts, src/features/photos (compression to 1200 and 400 pixels, browser upload, actions, queries), product page at /dashboard/products/[slug]/[productId] with the photo manager and Make live, cover thumbnails in the product list, new products open the photo page after saving, 21 new unit tests (149 in total). Next is edit product and stock screens, then the public storefront.
+Chunk 21 merged. The owner reported that photos looked cropped. Cause: the screens showed photos in square boxes that trim the edges, the stored files were never cropped. Chunk 21b delivered: PhotoTile showing whole photos in their real shape with tap to open full size, list thumbnails use object-contain, a test that fails if a cropping style is added (D059), 150 unit tests. The owner also reported that the go live checks still passed after disabling the products_require_photo_to_go_live trigger in Studio. In the sandbox 3 checks failed as expected, so the cause is likely the cloud dashboard being used instead of the local Studio, a statement that did not run, or misreading the output. Diagnosis steps were given and the owner should report back (D060). Next is edit product and stock screens.
