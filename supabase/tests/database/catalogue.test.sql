@@ -61,7 +61,7 @@ insert into public.shop_members (shop_id, user_id, role, is_active) values
 
 /* Bob already sells one product */
 insert into public.products (id, shop_id, category_code, name, price_minor, status) values
-  ('b0b0b0b0-b0b0-b0b0-b0b0-b0b0b0b0b0b0', 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'cosmetics', 'Bob Lip Gloss', 90000, 'active');
+  ('b0b0b0b0-b0b0-b0b0-b0b0-b0b0b0b0b0b0', 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'cosmetics', 'Bob Lip Gloss', 90000, 'draft');
 insert into public.product_variants (shop_id, product_id, shade) values
   ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'b0b0b0b0-b0b0-b0b0-b0b0-b0b0b0b0b0b0', 'Rose');
 
@@ -94,7 +94,7 @@ select tests.authenticate_as('11111111-1111-1111-1111-111111111111');
 select lives_ok(
   $$ select set_config('tests.dress', public.create_product(
        'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'Kitenge Dress', 'clothes', 350000,
-       'A bright kitenge dress', 'active',
+       'A bright kitenge dress', 'draft',
        '[{"size":"M","colour":"Red","sku":"KD-M-R"},{"size":"L","colour":"Red","sku":"KD-L-R"}]'::jsonb
      )::text, true) $$,
   'alice can create a product with two variants'
@@ -259,7 +259,7 @@ reset role;
 select tests.authenticate_as('22222222-2222-2222-2222-222222222222');
 
 select lives_ok(
-  $$ select public.create_product('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'Leather Bag', 'bags', 450000, null, 'active', '[{"colour":"Brown"}]'::jsonb) $$,
+  $$ select public.create_product('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'Leather Bag', 'bags', 450000, null, 'draft', '[{"colour":"Brown"}]'::jsonb) $$,
   'a manager can create a product'
 );
 

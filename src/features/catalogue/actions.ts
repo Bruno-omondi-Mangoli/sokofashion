@@ -98,7 +98,7 @@ export async function createProductAction(
   });
 
   /* New products start as drafts. Photos come next, and a product needs one to go live. */
-  const { error } = await supabase.rpc('create_product', {
+  const { data: newProductId, error } = await supabase.rpc('create_product', {
     target_shop_id: shop.id,
     product_name: input.name,
     product_category: input.category,
@@ -112,6 +112,9 @@ export async function createProductAction(
     console.error('create_product failed', { code: error.code });
     return { error: messageForErrorCode(error.code) };
   }
-
+  /* Go straight to the photos, because a product needs one to go live */
+  if (typeof newProductId === 'string') {
+    redirect(`/dashboard/products/${shop.slug}/${newProductId}?saved=created`);
+  }
   redirect(`/dashboard/products/${shop.slug}?created=1`);
 }

@@ -60,8 +60,8 @@ insert into public.shop_members (shop_id, user_id, role, is_active) values
   ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', '44444444-4444-4444-4444-444444444444', 'owner', true);
 
 insert into public.products (id, shop_id, category_code, name, price_minor, status) values
-  ('a0a0a0a0-a0a0-a0a0-a0a0-a0a0a0a0a0a0', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'clothes', 'Kitenge Dress', 350000, 'active'),
-  ('b0b0b0b0-b0b0-b0b0-b0b0-b0b0b0b0b0b0', 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'cosmetics', 'Bob Lip Gloss', 90000, 'active');
+  ('a0a0a0a0-a0a0-a0a0-a0a0-a0a0a0a0a0a0', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'clothes', 'Kitenge Dress', 350000, 'draft'),
+  ('b0b0b0b0-b0b0-b0b0-b0b0-b0b0b0b0b0b0', 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'cosmetics', 'Bob Lip Gloss', 90000, 'draft');
 
 insert into public.product_variants (id, shop_id, product_id, size, colour) values
   ('a1a1a1a1-a1a1-a1a1-a1a1-a1a1a1a1a1a1', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'a0a0a0a0-a0a0-a0a0-a0a0-a0a0a0a0a0a0', 'M', 'Red'),
