@@ -137,3 +137,23 @@ A view that gives on_hand for every variant, calculated as the sum of its moveme
 ## create_product update
 
 create_product now accepts an optional opening_stock for each variant in the list, a whole number from 0 to 100000. For every variant with more than 0, an opening movement is recorded in the stock ledger in the same transaction. If any part fails, nothing is saved. Opening stock is recorded by the same person who creates the product.
+
+## product_images
+
+The photos of a product. Each photo is two files in the public storage bucket product-images: a main picture and a thumbnail.
+
+- id, shop_id, product_id (shop_id and product_id must match the product)
+- sort_order: slot 1 to 4, unique per product, slot 1 is the cover
+- storage_path: shop_id/product_id/image_id.webp or .jpg, checked by a rule. The thumbnail has _t before the extension.
+- width, height, byte_size (main and thumbnail together, taken from storage)
+- created_by, created_at
+
+Row Level Security: members of the shop can read. Nobody can write directly. Changes go through the photo functions.
+
+## Photo functions and rules
+
+- add_product_image(product_id, image_id, ext, width, height): owners and managers only. Works out the file names, requires both files to exist, takes their sizes from storage, uses the first free slot, allows at most 4 photos per product and 100 MB per shop.
+- remove_product_image(image_id): owners and managers only. Deletes the record and returns the file name so the app can delete both files. A live product must keep one photo.
+- A product cannot become live without at least one photo. A trigger enforces this for everybody.
+- Storage rules on storage.objects: owners and managers can add and delete files in their own shop folder, only with names that follow the pattern. Shop members can read. Nobody can overwrite.
+- The bucket accepts only WebP and JPEG files up to 500 KB.
