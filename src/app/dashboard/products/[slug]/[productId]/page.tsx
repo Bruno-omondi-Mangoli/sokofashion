@@ -1,12 +1,14 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { z } from 'zod';
 import { Alert } from '@/components/ui/alert';
 import { AppShell } from '@/components/ui/app-shell';
 import { Badge, type BadgeTone } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Button, buttonClasses } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { signOutAction } from '@/features/auth/actions';
+import { archiveProductAction } from '@/features/catalogue/manage-actions';
 import { formatMoney } from '@/features/catalogue/money';
 import { getProductDetail } from '@/features/catalogue/product-queries';
 import { getShopCurrency } from '@/features/catalogue/queries';
@@ -91,6 +93,15 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
           Your product is saved as a draft. Add photos next, then make it live.
         </Alert>
       ) : null}
+      {saved === 'edited' ? <Alert tone="success">Your changes are saved.</Alert> : null}
+      {saved === 'archived' ? (
+        <Alert tone="success">This product is archived and hidden from buyers.</Alert>
+      ) : null}
+      {saved === 'restored' ? (
+        <Alert tone="success">
+          This product is back as a draft. Make it live when you are ready.
+        </Alert>
+      ) : null}
       {saved === 'active' ? <Alert tone="success">This product is now live.</Alert> : null}
       {saved === 'draft' ? <Alert tone="success">This product is hidden from buyers.</Alert> : null}
 
@@ -105,6 +116,23 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
           <p className="text-ink-soft text-base">{product.description}</p>
         ) : null}
       </Card>
+
+      <div className="flex flex-col gap-3 sm:flex-row">
+        <Link
+          href={`/dashboard/products/${shop.slug}/${product.id}/stock`}
+          className={buttonClasses('primary', 'w-full sm:w-auto')}
+        >
+          Stock
+        </Link>
+        {canManage ? (
+          <Link
+            href={`/dashboard/products/${shop.slug}/${product.id}/edit`}
+            className={buttonClasses('secondary', 'w-full sm:w-auto')}
+          >
+            Edit details
+          </Link>
+        ) : null}
+      </div>
 
       <section aria-labelledby="photos-heading" className="flex flex-col gap-3">
         <h2 id="photos-heading" className="font-display text-title text-ink">
@@ -159,6 +187,30 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
               </Button>
             </form>
           )}
+        </section>
+      ) : null}
+      {canManage ? (
+        <section aria-labelledby="archive-heading" className="flex flex-col gap-3">
+          <h2 id="archive-heading" className="font-display text-title text-ink">
+            {product.status === 'archived' ? 'Archived' : 'Archive'}
+          </h2>
+          <p className="text-ink-soft text-base">
+            {product.status === 'archived'
+              ? 'This product is hidden from buyers. Its stock and history are kept.'
+              : 'Archiving hides the product from buyers and keeps its stock and history. You can bring it back later.'}
+          </p>
+          <form action={archiveProductAction}>
+            <input type="hidden" name="slug" value={shop.slug} />
+            <input type="hidden" name="productId" value={product.id} />
+            <input
+              type="hidden"
+              name="archive"
+              value={product.status === 'archived' ? 'false' : 'true'}
+            />
+            <Button type="submit" variant="secondary" className="w-full sm:w-auto">
+              {product.status === 'archived' ? 'Restore as a draft' : 'Archive this product'}
+            </Button>
+          </form>
         </section>
       ) : null}
     </AppShell>

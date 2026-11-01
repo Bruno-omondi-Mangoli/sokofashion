@@ -1,10 +1,10 @@
 # Progress Tracker
 
-Last updated: 19 October 2026
-Current phase: Phase 4 (products, variants, images, stock ledger)
-Current chunk: Chunk 21b, whole photos and the trigger check (awaiting verification)
-Next chunk: Chunk 22, edit product, restock and stock correction screens, archive. Then Phase 4 is complete.
-After that: Phase 5, the public shop page for each seller, then the shared browse page across shops (D053, confirmed)
+Last updated: 20 October 2026
+Current phase: Phase 4 complete, moving to Phase 5
+Current chunk: Chunk 22, edit product, stock changes with undo, archive (awaiting verification)
+Next chunk: Chunk 23, the public read function for live products and the public shop page at the shop link, with sample photos in the seed
+After that: Chunk 24, product page for buyers with size and colour pickers, then the shared browse page (D053), then cart and checkout
 
 ## Phases
 
@@ -12,8 +12,8 @@ Phase 0: Product definition, user stories, success metrics: done pending friend 
 Phase 1: Tooling, accounts, Git and GitHub, repository, CI, scaffold: done
 Phase 2: Multi-tenant database, roles, RLS with isolation tests: done
 Phase 3: Authentication, onboarding, shop creation, staff invitations, email confirmation, password reset: done
-Phase 4: Design system, catalogue, stock ledger, add product screens, dev seed and photos done, then edit and stock screens: in progress
-Phase 5: Public storefront, then the shared browse page across shops (D053 confirmed), cart, checkout: not started
+Phase 4: Design system, catalogue, stock ledger, product screens, dev seed, photos, edit, stock and archive: done
+Phase 5: Public storefront, then the shared browse page across shops (D053 confirmed), cart, checkout: next
 Phase 6: Seller payment recording and confirmation, provider interface: not started
 Phase 7: Orders, delivery, digital receipts, notifications: not started
 Phase 8: Shop ledger, expenses, customer debts, reports, owner only cost prices: not started
@@ -46,12 +46,13 @@ Zero spend until the pilot is complete (D013, D014). Upgrade Vercel and Supabase
 - Next.js 16 project with TypeScript strict, Tailwind 4, ESLint, Prettier (Cache Components off, Tailwind loader kept in next.config.ts): done
 - Husky, lint-staged, commitlint, Dependabot: done
 - GitHub Actions CI with two jobs, Checks and Database tests: done
-- Zod, server-only, env validators, Vitest with 150 tests: done
+- Zod, server-only, env validators, Vitest with 182 tests: done
 - Docker Desktop, Supabase CLI as a dev dependency: done
 - Local database: shops, members, invitations, categories, products, variants, stock ledger, product photos and storage bucket, all with RLS: done
 - pgTAP tests in supabase/tests/database (203 checks in 8 files), run locally and in CI: done
 - Bitwarden, Supabase account and organization, staging project linked, eight migrations pushed: done
-- Auth screens, design system, AppShell, dashboard, onboarding, team page, product list, add product form, product page with photos shown whole: done
+- Auth screens, design system, AppShell, dashboard, onboarding, team page, product list, add product, product page, photos, edit, stock and archive screens: done
+- Shared shop access helpers in src/features/shops/access.ts for new code
 - Development seed: npm run db:seed and npm run db:fresh, local only: done
 - Supabase production project: not yet created (second free slot reserved)
 - Vercel account and project: not yet created
@@ -106,11 +107,12 @@ Rule: the seed script only ever runs locally (D054).
 Rule: photo file names are built by the database and the app, never chosen by the browser (D055).
 Rule: photos are never cropped, and a test guards it (D059).
 Rule: a break it on purpose check must first prove the break took effect (D060).
+Rule: a use server file exports only async functions, shared constants and types go in a separate types file.
 Health check: http://localhost:3000/api/health
 
 ## Open questions
 
-- Result of the trigger check from Chunk 21b: did the go live checks fail once the trigger showed D, and was staging affected
+- Results from the owner of the Chunk 21b checks: do photos show whole now, and what did the trigger diagnosis show (value D in step B, and the last lines of db:test)
 - Final product name (SokoFashion is the project name, DukaLink is the provisional product name)
 - Payment gateway for launch (Phase 6)
 - Plan prices after talking to the 5 pilot friends and a few strangers
@@ -121,9 +123,13 @@ Health check: http://localhost:3000/api/health
 - Photo storage: about 100 to 200 KB per photo with its thumbnail, 100 MB cap per shop, Supabase free storage about 1 GB in total. Recheck the cost table at 100 and 1000 shops.
 - Stray photo files if a delete fails: add a cleanup job in Phase 11
 - Uploaded files are checked by declared type and size only, add scanning in Phase 11
-- The seed script creates products without photos. Add sample photos in Phase 5 so the storefront has something to show.
-- Changing which photo is the cover: not built yet, add on the edit screen
-- Owner feedback on how the new look, the add product form and the photo screen feel
+- The seed script creates products without photos. Add sample photos in Chunk 23 so the storefront has something to show.
+- Changing which photo is the cover: not built yet
+- Adding a new size or colour to an existing product, and switching a variant off: not built yet, add as a small chunk
+- Older actions in photos and catalogue still carry their own copy of the shop lookup, move them to src/features/shops/access.ts in a cleanup
+- History shows you or a team member, real names come with the audit trail in Phase 9
+- Dates are shown in Kenyan time, give each shop its own time zone before other countries launch
+- Owner feedback on how the new look, the add product form, the photo and stock screens feel
 - Dark mode: revisit in Phase 11
 - Price changes and stock write offs are not alerted on yet, the audit trail and alerts come in Phase 9
 - VAT and eTIMS handling of prices: ask an accountant before Phase 7
@@ -140,4 +146,4 @@ Health check: http://localhost:3000/api/health
 
 ## Notes for the next chat
 
-Chunk 21 merged. The owner reported that photos looked cropped. Cause: the screens showed photos in square boxes that trim the edges, the stored files were never cropped. Chunk 21b delivered: PhotoTile showing whole photos in their real shape with tap to open full size, list thumbnails use object-contain, a test that fails if a cropping style is added (D059), 150 unit tests. The owner also reported that the go live checks still passed after disabling the products_require_photo_to_go_live trigger in Studio. In the sandbox 3 checks failed as expected, so the cause is likely the cloud dashboard being used instead of the local Studio, a statement that did not run, or misreading the output. Diagnosis steps were given and the owner should report back (D060). Next is edit product and stock screens.
+Chunk 21b delivered whole photo display (PhotoTile, no cropping, guard test). The owner has not yet reported the photo result or the trigger diagnosis. Chunk 22 delivered, with no database change: shared access helpers, edit product (name, category, price, description), stock page per product with levels, a record stock change form in everyday words (new stock, customer return, damaged, count correction up or down with a required note), history with undo via reversal entries, archive and restore, 32 new unit tests (182 in total). Verified against the real database rules in a sandbox for owner and attendant. Phase 4 is complete. Next is Phase 5, starting with the public read function for live products and the public shop page.
