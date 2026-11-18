@@ -147,3 +147,20 @@ Health check: http://localhost:3000/api/health
 ## Notes for the next chat
 
 Chunk 21b delivered whole photo display (PhotoTile, no cropping, guard test). The owner has not yet reported the photo result or the trigger diagnosis. Chunk 22 delivered, with no database change: shared access helpers, edit product (name, category, price, description), stock page per product with levels, a record stock change form in everyday words (new stock, customer return, damaged, count correction up or down with a required note), history with undo via reversal entries, archive and restore, 32 new unit tests (182 in total). Verified against the real database rules in a sandbox for owner and attendant. Phase 4 is complete. Next is Phase 5, starting with the public read function for live products and the public shop page.
+Current chunk: Chunk 22 recovery, stock editing reported not working locally (diagnosing: branch, local migrations, account role)
+Next chunk: Chunk 23, public read function for live products and the public shop page, after Chunk 22 is verified
+Open question: Chunk 22 stock form failure. Check branch, migration list --local, signed in role (attendants cannot see the form by design), then npm run db:fresh.
+Last updated: 2 November 2026
+Current phase: Phase 5, public storefront
+Current chunk: Chunk 23a, inspect the real schema before writing the public read function
+Next chunk: Chunk 23b, public read function for live products with pgTAP tests, then the public shop page and sample photos in the seed
+After that: Chunk 24, product page for buyers with size and colour pickers, then the shared browse page (D053), then cart and checkout
+Chunk 22 verified locally on 2 November 2026 after npm run db:fresh. Merge status to be confirmed (both CI checks green, then git pull on main).
+
+Last updated: 2 November 2026
+Current phase: Phase 5, public storefront
+Current chunk: Chunk 23a part 2, inspect product_images, stock_movements, enums and photo path rules
+Next chunk: Chunk 23b, get_public_shop function with pgTAP tests, public shop page, sample photos in the seed
+After that: Chunk 24, product page for buyers with size and colour pickers, then the shared browse page (D053, D058), then cart and checkout
+Chunk 21b verified on 2 November 2026: photos show whole. The photo table is named product_images.
+Chunk 22 merged to main and verified.
