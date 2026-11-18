@@ -1,10 +1,17 @@
 # Progress Tracker
 
-Last updated: 20 October 2026
-Current phase: Phase 4 complete, moving to Phase 5
-Current chunk: Chunk 22, edit product, stock changes with undo, archive (awaiting verification)
+Last updated: 17 November 2026
+Current phase: Phase 5 (public storefront, shared browse page, cart, checkout)
+Current chunk: none in progress. Chunk 23 has not been built on main.
 Next chunk: Chunk 23, the public read function for live products and the public shop page at the shop link, with sample photos in the seed
-After that: Chunk 24, product page for buyers with size and colour pickers, then the shared browse page (D053), then cart and checkout
+After that: Chunk 24, product page for buyers with size and colour pickers, then the shared browse page (D053, D058), then cart and checkout
+
+## State on 17 November 2026
+
+- main is at the merge of pull request 35 (Chunk 22). Chunks 1 to 22 are merged. The owner confirmed products load and photos show whole.
+- Unit tests 182, database checks 203 in 8 files, eight migrations, the last is product_photos.
+- Staging was paused for inactivity and resumed on 16 November. Confirm with npx supabase migration list that staging shows eight migrations.
+- An earlier, unreviewed attempt at Chunk 23 (migration public_shop_read and test public_shop.test.sql) is parked on branch parked/public-shop-read-old. Do not assume it is correct. The owner may paste it for review.
 
 ## Phases
 
@@ -13,7 +20,7 @@ Phase 1: Tooling, accounts, Git and GitHub, repository, CI, scaffold: done
 Phase 2: Multi-tenant database, roles, RLS with isolation tests: done
 Phase 3: Authentication, onboarding, shop creation, staff invitations, email confirmation, password reset: done
 Phase 4: Design system, catalogue, stock ledger, product screens, dev seed, photos, edit, stock and archive: done
-Phase 5: Public storefront, then the shared browse page across shops (D053 confirmed), cart, checkout: next
+Phase 5: Public storefront, then the shared browse page across shops (D053, D058), cart, checkout: next
 Phase 6: Seller payment recording and confirmation, provider interface: not started
 Phase 7: Orders, delivery, digital receipts, notifications: not started
 Phase 8: Shop ledger, expenses, customer debts, reports, owner only cost prices: not started
@@ -37,27 +44,16 @@ Zero spend until the pilot is complete (D013, D014). Upgrade Vercel and Supabase
 
 ## Pilot shops
 
-5 friends selling women's clothes, shoes and handbags. All five have one staff member each. Payments by cash and M-Pesa (Paybill, Buy Goods Till, Pochi la Biashara). Clothes come in sizes and colours together. Each item has one to four photos, and the seller decides how many, with at least one. Photos must be shown whole, never cropped (D059). Storefront must show products from several angles. The friends want a shared page where customers browse products from all five shops, then check out with the shop that owns the product (D053, confirmed).
+5 friends selling women's clothes, shoes and handbags. All five have one staff member each. Payments by cash and M-Pesa (Paybill, Buy Goods Till, Pochi la Biashara). Clothes come in sizes and colours together. Each item has one to four photos, at least one. Photos are shown whole, never cropped (D059). The friends want a shared page where customers browse products from all five shops, then check out with the shop that owns the product (D053, D058).
 
 ## Accounts and tools set up
 
-- VS Code, Git, Git Bash, Node 24, npm 11: done and verified
-- GitHub account with two-factor: done
-- Next.js 16 project with TypeScript strict, Tailwind 4, ESLint, Prettier (Cache Components off, Tailwind loader kept in next.config.ts): done
-- Husky, lint-staged, commitlint, Dependabot: done
-- GitHub Actions CI with two jobs, Checks and Database tests: done
-- Zod, server-only, env validators, Vitest with 182 tests: done
-- Docker Desktop, Supabase CLI as a dev dependency: done
-- Local database: shops, members, invitations, categories, products, variants, stock ledger, product photos and storage bucket, all with RLS: done
-- pgTAP tests in supabase/tests/database (203 checks in 8 files), run locally and in CI: done
-- Bitwarden, Supabase account and organization, staging project linked, eight migrations pushed: done
-- Auth screens, design system, AppShell, dashboard, onboarding, team page, product list, add product, product page, photos, edit, stock and archive screens: done
-- Shared shop access helpers in src/features/shops/access.ts for new code
-- Development seed: npm run db:seed and npm run db:fresh, local only: done
-- Supabase production project: not yet created (second free slot reserved)
-- Vercel account and project: not yet created
-- Custom SMTP and domain: not yet decided (D036)
-- GitHub Pro: not purchased, deferred to pilot stage
+- VS Code, Git, Git Bash, Node 24, npm 11, Docker Desktop, Supabase CLI as a dev dependency: done
+- GitHub account with two-factor, repository, CI with two jobs (Checks and Database tests), Husky, lint-staged, commitlint, Dependabot: done
+- Next.js 16, TypeScript strict, Tailwind 4 (loader kept in next.config.ts), Zod, Vitest 182 tests: done
+- Local database with eight migrations, RLS everywhere, pgTAP 203 checks in 8 files: done
+- Supabase staging project linked, eight migrations pushed. Production project and Vercel: not created. Custom SMTP and domain: not decided (D036). GitHub Pro: not purchased.
+- Built so far: auth screens, design system, dashboard, onboarding, team, product list, add product, product page with photos, edit, stock and archive, dev seed.
 
 ## Machine
 
@@ -76,9 +72,6 @@ Account note: npm run db:reset deletes all local accounts, run npm run db:fresh 
 Photo bucket: product-images (public read, 500 KB per file, WebP and JPEG only)
 Supabase staging project ref: (your 20 letter ref)
 Supabase staging region: (your region)
-Supabase production project:
-Vercel project:
-Domain:
 Secrets (database password, service role key) are stored only in Bitwarden. Never in Git or chat.
 
 ## Useful commands
@@ -112,38 +105,30 @@ Health check: http://localhost:3000/api/health
 
 ## Open questions
 
-- Results from the owner of the Chunk 21b checks: do photos show whole now, and what did the trigger diagnosis show (value D in step B, and the last lines of db:test)
+- Confirm the Stock button and the stock page work for the owner (products load and photos show whole, stock screens not explicitly confirmed)
+- The trigger check from Chunk 21b was never reported. Low priority: run one break it check with docker exec to confirm db:test fails when a trigger is disabled (D060).
 - Final product name (SokoFashion is the project name, DukaLink is the provisional product name)
 - Payment gateway for launch (Phase 6)
 - Plan prices after talking to the 5 pilot friends and a few strangers
-- Answers to the remaining pilot interview questions (delivery, how they check M-Pesa messages, past losses, what they would pay, how they take photos today)
+- Remaining pilot interview questions (delivery, how they check M-Pesa messages, past losses, what they would pay, how they take photos today)
 - Custom SMTP: buy a domain in Phase 12, or create pilot accounts by hand in the dashboard (D036)
-- Staging email templates (confirmation and recovery) are locked until custom SMTP exists. Apply supabase/templates files in Phase 12.
+- Staging email templates are locked until custom SMTP exists. Apply supabase/templates files in Phase 12.
 - A Swahili speaker must confirm all Swahili text, including category names, before the pilot (D041)
-- Photo storage: about 100 to 200 KB per photo with its thumbnail, 100 MB cap per shop, Supabase free storage about 1 GB in total. Recheck the cost table at 100 and 1000 shops.
-- Stray photo files if a delete fails: add a cleanup job in Phase 11
-- Uploaded files are checked by declared type and size only, add scanning in Phase 11
+- Photo storage: 100 MB cap per shop, Supabase free storage about 1 GB in total. Recheck the cost table at 100 and 1000 shops.
+- Stray photo files if a delete fails: add a cleanup job in Phase 11. Uploads are checked by declared type and size only, add scanning in Phase 11.
 - The seed script creates products without photos. Add sample photos in Chunk 23 so the storefront has something to show.
-- Changing which photo is the cover: not built yet
-- Adding a new size or colour to an existing product, and switching a variant off: not built yet, add as a small chunk
-- Older actions in photos and catalogue still carry their own copy of the shop lookup, move them to src/features/shops/access.ts in a cleanup
-- History shows you or a team member, real names come with the audit trail in Phase 9
-- Dates are shown in Kenyan time, give each shop its own time zone before other countries launch
-- Owner feedback on how the new look, the add product form, the photo and stock screens feel
-- Dark mode: revisit in Phase 11
+- Changing which photo is the cover, adding a size or colour to an existing product, and switching a variant off: not built yet
+- Older actions in photos and catalogue carry their own copy of the shop lookup, move them to src/features/shops/access.ts in a cleanup
+- History shows you or a team member, real names come with the audit trail in Phase 9. Dates are shown in Kenyan time, give each shop its own time zone before other countries launch.
 - Price changes and stock write offs are not alerted on yet, the audit trail and alerts come in Phase 9
-- VAT and eTIMS handling of prices: ask an accountant before Phase 7
-- Cosmetics expiry and labelling rules: ask a lawyer or KEBS before the pilot
-- Per variant prices exist in the database but the screens use one price per product
-- The product list shows the newest 100 products only, add paging if a shop passes that
+- VAT and eTIMS handling of prices: ask an accountant before Phase 7. Cosmetics expiry and labelling rules: ask a lawyer or KEBS before the pilot.
+- Per variant prices exist in the database but the screens use one price per product. The product list shows the newest 100 products only.
 - Confirm Pochi la Biashara details in Phase 6
-- CAPTCHA, leaked password protection and stronger rate limits (Phase 11)
-- A change password option for logged in users: add on a settings page later
-- Team size limit and the catalogue and photo limits should later come from plan limits in the database
-- Phone number login for sellers: needs a paid SMS provider, revisit after the pilot
-- Generated TypeScript types for the database: deferred, results are checked with Zod instead (D051), revisit in Phase 11
+- CAPTCHA, leaked password protection and stronger rate limits (Phase 11). Dark mode: revisit in Phase 11. Generated database types: revisit in Phase 11 (D051).
+- Phone number login needs a paid SMS provider, revisit after the pilot. A change password option for logged in users: add later.
+- Team size, catalogue and photo limits should later come from plan limits in the database
 - Lawyer questions for Phase 12: foreign Supabase region and Privacy Policy wording, collecting emails, ODPC registration, trademark and impersonation clause, prohibited and counterfeit goods and image rights clause, takedown process, marketplace duties for disputes and refunds, controller and processor roles for staff data, data processing agreement with the email provider, font licences, staff activity records and retention
 
 ## Notes for the next chat
 
-Chunk 21b delivered whole photo display (PhotoTile, no cropping, guard test). The owner has not yet reported the photo result or the trigger diagnosis. Chunk 22 delivered, with no database change: shared access helpers, edit product (name, category, price, description), stock page per product with levels, a record stock change form in everyday words (new stock, customer return, damaged, count correction up or down with a required note), history with undo via reversal entries, archive and restore, 32 new unit tests (182 in total). Verified against the real database rules in a sandbox for owner and attendant. Phase 4 is complete. Next is Phase 5, starting with the public read function for live products and the public shop page.
+Chunks 1 to 22 are done and merged. The owner started a second chat that began Chunk 23 without recording it. That work is parked on branch parked/public-shop-read-old and is unreviewed. A fresh chat should read these files, summarise, ask for the standard state check, and not assume anything that is not recorded here. Tracker updates after each chunk are given as changed lines only, to save credits. Next is Chunk 23, the public read function for live products and the public shop page.
