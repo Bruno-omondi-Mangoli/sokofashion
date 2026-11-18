@@ -1,10 +1,10 @@
 # Progress Tracker
 
-Last updated: 20 October 2026
-Current phase: Phase 4 complete, moving to Phase 5
-Current chunk: Chunk 22, edit product, stock changes with undo, archive (awaiting verification)
-Next chunk: Chunk 23, the public read function for live products and the public shop page at the shop link, with sample photos in the seed
-After that: Chunk 24, product page for buyers with size and colour pickers, then the shared browse page (D053), then cart and checkout
+Last updated: 18 November 2026
+Current phase: Phase 5, public storefront
+Current chunk: Chunk 22c, remove the parked public shop read work from main (pull request open)
+Next chunk: Chunk 23a part 2, read only inspection of product_images, stock_movements, enums and photo path rules
+After that: Chunk 23b, get_public_shop with pgTAP tests, public shop page, sample photos in the seed. Then Chunk 24, product page for buyers with size and colour pickers, then the shared browse page (D053, D058), then cart and checkout
 
 ## Phases
 
@@ -13,7 +13,7 @@ Phase 1: Tooling, accounts, Git and GitHub, repository, CI, scaffold: done
 Phase 2: Multi-tenant database, roles, RLS with isolation tests: done
 Phase 3: Authentication, onboarding, shop creation, staff invitations, email confirmation, password reset: done
 Phase 4: Design system, catalogue, stock ledger, product screens, dev seed, photos, edit, stock and archive: done
-Phase 5: Public storefront, then the shared browse page across shops (D053 confirmed), cart, checkout: next
+Phase 5: Public storefront, then the shared browse page across shops (D053 confirmed), cart, checkout: in progress
 Phase 6: Seller payment recording and confirmation, provider interface: not started
 Phase 7: Orders, delivery, digital receipts, notifications: not started
 Phase 8: Shop ledger, expenses, customer debts, reports, owner only cost prices: not started
@@ -74,6 +74,7 @@ Local database container: supabase_db_sokofashion (check with docker ps)
 Local test accounts after npm run db:fresh: owner1, owner2, owner3 and attendant1 at example.test, password Password123!
 Account note: npm run db:reset deletes all local accounts, run npm run db:fresh instead.
 Photo bucket: product-images (public read, 500 KB per file, WebP and JPEG only)
+Photo table: product_images
 Supabase staging project ref: (your 20 letter ref)
 Supabase staging region: (your region)
 Supabase production project:
@@ -108,11 +109,11 @@ Rule: photo file names are built by the database and the app, never chosen by th
 Rule: photos are never cropped, and a test guards it (D059).
 Rule: a break it on purpose check must first prove the break took effect (D060).
 Rule: a use server file exports only async functions, shared constants and types go in a separate types file.
+Rule: parked work stays on its side branch and is never opened as a pull request into main (D066).
 Health check: http://localhost:3000/api/health
 
 ## Open questions
 
-- Results from the owner of the Chunk 21b checks: do photos show whole now, and what did the trigger diagnosis show (value D in step B, and the last lines of db:test)
 - Final product name (SokoFashion is the project name, DukaLink is the provisional product name)
 - Payment gateway for launch (Phase 6)
 - Plan prices after talking to the 5 pilot friends and a few strangers
@@ -123,7 +124,7 @@ Health check: http://localhost:3000/api/health
 - Photo storage: about 100 to 200 KB per photo with its thumbnail, 100 MB cap per shop, Supabase free storage about 1 GB in total. Recheck the cost table at 100 and 1000 shops.
 - Stray photo files if a delete fails: add a cleanup job in Phase 11
 - Uploaded files are checked by declared type and size only, add scanning in Phase 11
-- The seed script creates products without photos. Add sample photos in Chunk 23 so the storefront has something to show.
+- The seed script creates products without photos. Add sample photos in Chunk 23b so the storefront has something to show.
 - Changing which photo is the cover: not built yet
 - Adding a new size or colour to an existing product, and switching a variant off: not built yet, add as a small chunk
 - Older actions in photos and catalogue still carry their own copy of the shop lookup, move them to src/features/shops/access.ts in a cleanup
@@ -142,25 +143,11 @@ Health check: http://localhost:3000/api/health
 - Team size limit and the catalogue and photo limits should later come from plan limits in the database
 - Phone number login for sellers: needs a paid SMS provider, revisit after the pilot
 - Generated TypeScript types for the database: deferred, results are checked with Zod instead (D051), revisit in Phase 11
+- CI result on main after PR 36 (green or red) was not reported yet
 - Lawyer questions for Phase 12: foreign Supabase region and Privacy Policy wording, collecting emails, ODPC registration, trademark and impersonation clause, prohibited and counterfeit goods and image rights clause, takedown process, marketplace duties for disputes and refunds, controller and processor roles for staff data, data processing agreement with the email provider, font licences, staff activity records and retention
 
 ## Notes for the next chat
 
-Chunk 21b delivered whole photo display (PhotoTile, no cropping, guard test). The owner has not yet reported the photo result or the trigger diagnosis. Chunk 22 delivered, with no database change: shared access helpers, edit product (name, category, price, description), stock page per product with levels, a record stock change form in everyday words (new stock, customer return, damaged, count correction up or down with a required note), history with undo via reversal entries, archive and restore, 32 new unit tests (182 in total). Verified against the real database rules in a sandbox for owner and attendant. Phase 4 is complete. Next is Phase 5, starting with the public read function for live products and the public shop page.
-Current chunk: Chunk 22 recovery, stock editing reported not working locally (diagnosing: branch, local migrations, account role)
-Next chunk: Chunk 23, public read function for live products and the public shop page, after Chunk 22 is verified
-Open question: Chunk 22 stock form failure. Check branch, migration list --local, signed in role (attendants cannot see the form by design), then npm run db:fresh.
-Last updated: 2 November 2026
-Current phase: Phase 5, public storefront
-Current chunk: Chunk 23a, inspect the real schema before writing the public read function
-Next chunk: Chunk 23b, public read function for live products with pgTAP tests, then the public shop page and sample photos in the seed
-After that: Chunk 24, product page for buyers with size and colour pickers, then the shared browse page (D053), then cart and checkout
-Chunk 22 verified locally on 2 November 2026 after npm run db:fresh. Merge status to be confirmed (both CI checks green, then git pull on main).
+Chunk 21b verified on 2 November 2026: photos show whole. Chunk 22 delivered and merged (PR 35): shared access helpers, edit product, stock page per product with levels, record stock change form in everyday words, history with undo via reversal entries, archive and restore, 182 unit tests in total. Phase 4 is complete.
 
-Last updated: 2 November 2026
-Current phase: Phase 5, public storefront
-Current chunk: Chunk 23a part 2, inspect product_images, stock_movements, enums and photo path rules
-Next chunk: Chunk 23b, get_public_shop function with pgTAP tests, public shop page, sample photos in the seed
-After that: Chunk 24, product page for buyers with size and colour pickers, then the shared browse page (D053, D058), then cart and checkout
-Chunk 21b verified on 2 November 2026: photos show whole. The photo table is named product_images.
-Chunk 22 merged to main and verified.
+18 November 2026: PR 36 merged the parked branch parked/public-shop-read-old into main by mistake. The migration 20261102113239_public_shop_read.sql was never applied to staging or to the local database. Chunk 22c removes it and its test file supabase/tests/database/public_shop.test.sql. The branch parked/public-shop-read-old is kept as a reference only and must not be reused unless pasted for review. D064 and D065 stay proposed until Chunk 23b. The earlier tracker blocks that said Chunk 22 stock editing was failing were stale and have been removed. Phase 5 starts with a read only schema inspection (Chunk 23a part 2), then Chunk 23b writes get_public_shop fresh.
