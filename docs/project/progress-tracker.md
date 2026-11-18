@@ -2,9 +2,9 @@
 
 Last updated: 18 November 2026
 Current phase: Phase 5, public storefront
-Current chunk: Chunk 22c, remove the parked public shop read work from main (pull request open)
-Next chunk: Chunk 23a part 2, read only inspection of product_images, stock_movements, enums and photo path rules
-After that: Chunk 23b, get_public_shop with pgTAP tests, public shop page, sample photos in the seed. Then Chunk 24, product page for buyers with size and colour pickers, then the shared browse page (D053, D058), then cart and checkout
+Current chunk: Chunk 23a part 3, read only check of the stock view, function permissions, policies and bucket (no code change)
+Next chunk: Chunk 23b, get_public_shop with pgTAP tests, public shop page, sample photos in the seed
+After that: Chunk 24, product page for buyers with size and colour pickers, then the shared browse page (D053, D058), then cart and checkout
 
 ## Phases
 
@@ -82,6 +82,17 @@ Vercel project:
 Domain:
 Secrets (database password, service role key) are stored only in Bitwarden. Never in Git or chat.
 
+## Real schema facts (checked on 18 November 2026)
+
+Tables: categories, countries, product_images, product_variants, products, shop_invitations, shop_members, shops, stock_movements, and the view variant_stock. RLS is on for all nine tables.
+Enums: product_status (draft, active, archived), shop_role (owner, manager, attendant), shop_status (active, suspended), stock_reason (opening, restock, sale, sale_return, adjustment, damage, reversal).
+Live product means products.status is active. A public shop must also have shops.status active.
+Photos: product_images has id, shop_id, product_id, sort_order (1 to 4), storage_path, width, height, byte_size. The path is shop_id/product_id/image_id.ext for the main file and shop_id/product_id/image_id_t.ext for the thumbnail, with ext webp or jpg.
+Stock: stock_movements.quantity_change summed per variant. The view variant_stock gives on_hand per variant.
+Variants: size, colour, shade, volume_ml, expires_on, price_minor (can be empty), is_active.
+Anonymous visitors (anon) have no table access except SELECT on categories and every permission on countries (to be revoked in Chunk 23b).
+All 21 public functions have a fixed search_path.
+
 ## Useful commands
 
 npm run check : typecheck, lint, format check, tests and build in one go
@@ -91,6 +102,7 @@ npm run db:seed : load the sample data without resetting
 npm run db:test : database security tests (needs Docker and the local database running)
 npx supabase migration list : compare local and staging migrations
 npx supabase db push : send merged migrations to staging (dry run first)
+Helper for read only schema checks (lasts one terminal window): dbq() { docker exec supabase_db_sokofashion psql -U postgres -d postgres -A -F ' | ' -c "$1"; }
 Rule: never merge a pull request unless both CI checks are green.
 Rule: after merging, run git switch main, git pull and git log to confirm the work is on main.
 Rule: change the database only through new migration files.
@@ -143,11 +155,15 @@ Health check: http://localhost:3000/api/health
 - Team size limit and the catalogue and photo limits should later come from plan limits in the database
 - Phone number login for sellers: needs a paid SMS provider, revisit after the pilot
 - Generated TypeScript types for the database: deferred, results are checked with Zod instead (D051), revisit in Phase 11
-- CI result on main after PR 36 (green or red) was not reported yet
+- anon holds every permission on the countries table including TRUNCATE: revoke in Chunk 23b after checking what authenticated can do
+- The view variant_stock: confirm it respects RLS (security invoker) and that anon cannot read it, check in Chunk 23a part 3
+- Which functions anon and authenticated can run: check in Chunk 23a part 3, revoke anything anon does not need
 - Lawyer questions for Phase 12: foreign Supabase region and Privacy Policy wording, collecting emails, ODPC registration, trademark and impersonation clause, prohibited and counterfeit goods and image rights clause, takedown process, marketplace duties for disputes and refunds, controller and processor roles for staff data, data processing agreement with the email provider, font licences, staff activity records and retention
 
 ## Notes for the next chat
 
 Chunk 21b verified on 2 November 2026: photos show whole. Chunk 22 delivered and merged (PR 35): shared access helpers, edit product, stock page per product with levels, record stock change form in everyday words, history with undo via reversal entries, archive and restore, 182 unit tests in total. Phase 4 is complete.
 
-18 November 2026: PR 36 merged the parked branch parked/public-shop-read-old into main by mistake. The migration 20261102113239_public_shop_read.sql was never applied to staging or to the local database. Chunk 22c removes it and its test file supabase/tests/database/public_shop.test.sql. The branch parked/public-shop-read-old is kept as a reference only and must not be reused unless pasted for review. D064 and D065 stay proposed until Chunk 23b. The earlier tracker blocks that said Chunk 22 stock editing was failing were stale and have been removed. Phase 5 starts with a read only schema inspection (Chunk 23a part 2), then Chunk 23b writes get_public_shop fresh.
+Chunk 22c merged on 18 November 2026: PR 36 had merged the parked branch parked/public-shop-read-old into main by mistake, and the parked migration 20261102113239_public_shop_read.sql and its test file were removed again. It was never applied to staging or local. CI green, db:test passing (203 checks in 8 files). The branch parked/public-shop-read-old is kept as a reference only and must not be reused unless pasted for review. D064 and D065 stay proposed until Chunk 23b.
+
+Chunk 23a part 2 done on 18 November 2026: the real schema was inspected, see the Real schema facts section. Next is Chunk 23a part 3, a read only check of the variant_stock view, function permissions, policies and the photo bucket, then Chunk 23b writes get_public_shop fresh.
