@@ -5,13 +5,16 @@ import { PhotoTile } from '@/features/photos/photo-tile';
 import { publicPhotoUrl } from '@/features/photos/urls';
 import type { PublicProduct } from './schemas';
 import { buildPhotoViews, productInStock, variantLabel } from './view';
+import Link from 'next/link';
 
 export function ProductCard({
   product,
   minorUnits,
+  shopSlug,
 }: {
   product: PublicProduct;
   minorUnits: number;
+  shopSlug: string;
 }) {
   const photos = buildPhotoViews(product.images, publicPhotoUrl);
   const cover = photos[0];
@@ -30,7 +33,14 @@ export function ProductCard({
       ) : null}
 
       <div className="flex items-start justify-between gap-3">
-        <h2 className="font-display text-title text-ink">{product.name}</h2>
+        <h2 className="font-display text-title text-ink">
+          <Link
+            href={`/s/${shopSlug}/p/${product.id}`}
+            className="underline-offset-4 hover:underline"
+          >
+            {product.name}
+          </Link>
+        </h2>
         <Badge tone={available ? 'positive' : 'muted'}>{available ? 'In stock' : 'Sold out'}</Badge>
       </div>
 

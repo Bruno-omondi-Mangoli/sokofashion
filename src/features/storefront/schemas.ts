@@ -47,3 +47,13 @@ export type PublicShop = z.infer<typeof publicShopSchema>;
 export type PublicProduct = z.infer<typeof productSchema>;
 export type PublicVariant = z.infer<typeof variantSchema>;
 export type PublicImage = z.infer<typeof imageSchema>;
+
+/* One live product with the shop it belongs to, as returned by get_public_product */
+export const publicProductResultSchema = z
+  .object({
+    shop: z.object({ name: z.string(), slug: z.string() }),
+    product: productSchema,
+  })
+  .nullable();
+
+export type PublicProductResult = NonNullable<z.infer<typeof publicProductResultSchema>>;
