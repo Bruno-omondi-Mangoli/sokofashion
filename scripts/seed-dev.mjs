@@ -8,6 +8,8 @@
  * Run it with: npm run db:seed
  */
 import { createClient } from '@supabase/supabase-js';
+import { randomUUID } from 'node:crypto';
+import sharp from 'sharp';
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
@@ -162,6 +164,95 @@ function buildVariants(product) {
   return variants;
 }
 
+/* Mini Crossbody stays a draft on purpose, so the public page shows that drafts are hidden */
+const keepDraft = new Set(['Mini Crossbody']);
+
+/* Three photo shapes (portrait, square, landscape) so the page proves photos show whole */
+const shapes = [
+  [800, 1200],
+  [900, 900],
+  [1200, 800],
+];
+const colours = [
+  { r: 42, g: 46, b: 122 },
+  { r: 232, g: 163, b: 23 },
+  { r: 191, g: 49, b: 96 },
+  { r: 18, g: 128, b: 120 },
+];
+
+async function addSamplePhotos(shopId, productId, owner, count, seedNumber) {
+  for (let n = 0; n < count; n += 1) {
+    const [width, height] = shapes[(seedNumber + n) % shapes.length];
+    const background = colours[(seedNumber + n) % colours.length];
+    const scale = 400 / Math.max(width, height);
+    const thumbWidth = Math.round(width * scale);
+    const thumbHeight = Math.round(height * scale);
+
+    const main = await sharp({ create: { width, height, channels: 3, background } })
+      .jpeg({ quality: 70 })
+      .toBuffer();
+    const thumb = await sharp({
+      create: { width: thumbWidth, height: thumbHeight, channels: 3, background },
+    })
+      .jpeg({ quality: 70 })
+      .toBuffer();
+
+    const imageId = randomUUID();
+    const folder = `${shopId}/${productId}`;
+    const uploads = [
+      [`${folder}/${imageId}.jpg`, main],
+      [`${folder}/${imageId}_t.jpg`, thumb],
+    ];
+    for (const [filePath, buffer] of uploads) {
+      const { error } = await admin.storage
+        .from('product-images')
+        .upload(filePath, buffer, { contentType: 'image/jpeg', upsert: true });
+      if (error) {
+        stop(`could not upload a sample photo: ${error.message}`);
+      }
+    }
+
+    const { error } = await owner.rpc('add_product_image', {
+      target_product_id: productId,
+      new_image_id: imageId,
+      image_ext: 'jpg',
+      image_width: width,
+      image_height: height,
+    });
+    if (error) {
+      stop(`could not register a sample photo: ${error.message}`);
+    }
+  }
+}
+
+async function addPhotosAndGoLive(shop, shopId, owner) {
+  const { data: rows, error } = await owner
+    .from('products')
+    .select('id, name')
+    .eq('shop_id', shopId);
+  if (error) {
+    stop(`could not read the new products: ${error.message}`);
+  }
+
+  for (const [index, product] of shop.products.entries()) {
+    const row = (rows ?? []).find((item) => item.name === product.name);
+    if (!row) {
+      stop(`could not find ${product.name} after creating it.`);
+    }
+    await addSamplePhotos(shopId, row.id, owner, (index % 3) + 1, index);
+
+    if (!keepDraft.has(product.name)) {
+      const { error: liveError } = await owner
+        .from('products')
+        .update({ status: 'active' })
+        .eq('id', row.id);
+      if (liveError) {
+        stop(`could not make ${product.name} live: ${liveError.message}`);
+      }
+    }
+  }
+}
+
 async function seedShop(shop) {
   await ensureUser(shop.ownerEmail);
   const owner = await signIn(shop.ownerEmail);
@@ -202,7 +293,7 @@ async function seedShop(shop) {
       stop(`could not create ${product.name}: ${error.message}`);
     }
   }
-
+  await addPhotosAndGoLive(shop, shopId, owner);
   console.log(`Created shop ${shop.slug} with ${shop.products.length} products.`);
   return { shopId, owner };
 }
