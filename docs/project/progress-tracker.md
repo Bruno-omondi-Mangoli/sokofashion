@@ -1,10 +1,10 @@
 # Progress Tracker
 
-Last updated: 18 November 2026
+Last updated: 19 November 2026
 Current phase: Phase 5, public storefront
-Current chunk: Chunk 23a part 3, read only check of the stock view, function permissions, policies and bucket (no code change)
-Next chunk: Chunk 23b, get_public_shop with pgTAP tests, public shop page, sample photos in the seed
-After that: Chunk 24, product page for buyers with size and colour pickers, then the shared browse page (D053, D058), then cart and checkout
+Current chunk: Docs update after Chunk 24a (branch docs/update-after-chunk-24a)
+Next chunk: Chunk 25, the shared browse page across participating shops (D053, D058), starting with the shop opt in
+After that: Chunk 26, cart and checkout for one shop, then Phase 6
 
 ## Phases
 
@@ -13,7 +13,7 @@ Phase 1: Tooling, accounts, Git and GitHub, repository, CI, scaffold: done
 Phase 2: Multi-tenant database, roles, RLS with isolation tests: done
 Phase 3: Authentication, onboarding, shop creation, staff invitations, email confirmation, password reset: done
 Phase 4: Design system, catalogue, stock ledger, product screens, dev seed, photos, edit, stock and archive: done
-Phase 5: Public storefront, then the shared browse page across shops (D053 confirmed), cart, checkout: in progress
+Phase 5: Public storefront, then the shared browse page across shops (D053 confirmed), cart, checkout: in progress. Done so far: public shop page (23c) and public product page with pickers (24a).
 Phase 6: Seller payment recording and confirmation, provider interface: not started
 Phase 7: Orders, delivery, digital receipts, notifications: not started
 Phase 8: Shop ledger, expenses, customer debts, reports, owner only cost prices: not started
@@ -37,7 +37,7 @@ Zero spend until the pilot is complete (D013, D014). Upgrade Vercel and Supabase
 
 ## Pilot shops
 
-5 friends selling women's clothes, shoes and handbags. All five have one staff member each. Payments by cash and M-Pesa (Paybill, Buy Goods Till, Pochi la Biashara). Clothes come in sizes and colours together. Each item has one to four photos, and the seller decides how many, with at least one. Photos must be shown whole, never cropped (D059). Storefront must show products from several angles. The friends want a shared page where customers browse products from all five shops, then check out with the shop that owns the product (D053, confirmed).
+5 friends selling women's clothes, shoes and handbags. All five have one staff member each. Payments by cash and M-Pesa (Paybill, Buy Goods Till, Pochi la Biashara). Clothes come in sizes and colours together. Each item has one to four photos, and the seller decides how many, with at least one. Photos must be shown whole, never cropped (D059). Storefront must show products from several angles. The friends want a shared page where customers browse products from all five shops, then check out with the shop that owns the product (D053, confirmed). A shop link shows only that shop's products.
 
 ## Accounts and tools set up
 
@@ -46,14 +46,17 @@ Zero spend until the pilot is complete (D013, D014). Upgrade Vercel and Supabase
 - Next.js 16 project with TypeScript strict, Tailwind 4, ESLint, Prettier (Cache Components off, Tailwind loader kept in next.config.ts): done
 - Husky, lint-staged, commitlint, Dependabot: done
 - GitHub Actions CI with two jobs, Checks and Database tests: done
-- Zod, server-only, env validators, Vitest with 182 tests: done
+- Zod, server-only, env validators, Vitest with 209 tests in 24 files: done
+- sharp as a development only dependency for sample photos in the seed: done
 - Docker Desktop, Supabase CLI as a dev dependency: done
 - Local database: shops, members, invitations, categories, products, variants, stock ledger, product photos and storage bucket, all with RLS: done
-- pgTAP tests in supabase/tests/database (203 checks in 8 files), run locally and in CI: done
-- Bitwarden, Supabase account and organization, staging project linked, eight migrations pushed: done
+- pgTAP tests in supabase/tests/database (269 checks in 10 files), run locally and in CI: done
+- Bitwarden, Supabase account and organization, staging project linked, ten migrations pushed (confirm with npx supabase migration list): done
 - Auth screens, design system, AppShell, dashboard, onboarding, team page, product list, add product, product page, photos, edit, stock and archive screens: done
+- Public shop page at /s/[slug] and public product page at /s/[slug]/p/[productId]: done
+- Public read functions get_public_shop and get_public_product: done
 - Shared shop access helpers in src/features/shops/access.ts for new code
-- Development seed: npm run db:seed and npm run db:fresh, local only: done
+- Development seed with sample photos: npm run db:seed and npm run db:fresh, local only: done
 - Supabase production project: not yet created (second free slot reserved)
 - Vercel account and project: not yet created
 - Custom SMTP and domain: not yet decided (D036)
@@ -70,6 +73,7 @@ Local Studio: http://127.0.0.1:54323 (the cloud dashboard address starts with su
 Local fake inbox (confirmation emails): http://127.0.0.1:54324
 Local app address: http://localhost:3000 (always use localhost, not 127.0.0.1)
 Design guide: http://localhost:3000/design (hidden in production)
+Sample public shops locally: /s/mama-njeri, /s/zuri-shoes, /s/amani-bags (Mini Crossbody is a draft on purpose)
 Local database container: supabase_db_sokofashion (check with docker ps)
 Local test accounts after npm run db:fresh: owner1, owner2, owner3 and attendant1 at example.test, password Password123!
 Account note: npm run db:reset deletes all local accounts, run npm run db:fresh instead.
@@ -82,22 +86,22 @@ Vercel project:
 Domain:
 Secrets (database password, service role key) are stored only in Bitwarden. Never in Git or chat.
 
-## Real schema facts (checked on 18 November 2026)
+## Real schema facts (checked on 18 November 2026, updated after Chunk 24a)
 
-Tables: categories, countries, product_images, product_variants, products, shop_invitations, shop_members, shops, stock_movements, and the view variant_stock. RLS is on for all nine tables.
+Tables: categories, countries, product_images, product_variants, products, shop_invitations, shop_members, shops, stock_movements, and the view variant_stock (security invoker). RLS is on for all nine tables.
 Enums: product_status (draft, active, archived), shop_role (owner, manager, attendant), shop_status (active, suspended), stock_reason (opening, restock, sale, sale_return, adjustment, damage, reversal).
 Live product means products.status is active. A public shop must also have shops.status active.
 Photos: product_images has id, shop_id, product_id, sort_order (1 to 4), storage_path, width, height, byte_size. The path is shop_id/product_id/image_id.ext for the main file and shop_id/product_id/image_id_t.ext for the thumbnail, with ext webp or jpg.
-Stock: stock_movements.quantity_change summed per variant. The view variant_stock gives on_hand per variant.
+Stock: stock_movements.quantity_change summed per variant. The view variant_stock gives on_hand per variant for signed in members.
 Variants: size, colour, shade, volume_ml, expires_on, price_minor (can be empty), is_active.
-Anonymous visitors (anon) have no table access except SELECT on categories and every permission on countries (to be revoked in Chunk 23b).
-All 21 public functions have a fixed search_path.
+Anonymous visitors (anon) can read only categories and countries as tables, and can run only get_public_shop and get_public_product. Countries is read only for everybody (D068).
+All public functions have a fixed search_path.
 
 ## Useful commands
 
 npm run check : typecheck, lint, format check, tests and build in one go
 npm run db:start, db:stop, db:reset, db:status : local database controls
-npm run db:fresh : reset the local database and load sample accounts, shops and products
+npm run db:fresh : reset the local database and load sample accounts, shops, products and photos
 npm run db:seed : load the sample data without resetting
 npm run db:test : database security tests (needs Docker and the local database running)
 npx supabase migration list : compare local and staging migrations
@@ -122,6 +126,8 @@ Rule: photos are never cropped, and a test guards it (D059).
 Rule: a break it on purpose check must first prove the break took effect (D060).
 Rule: a use server file exports only async functions, shared constants and types go in a separate types file.
 Rule: parked work stays on its side branch and is never opened as a pull request into main (D066).
+Rule: the public reads data only through get_public functions, and seller text is shown as plain text (D064, D071).
+Rule: npm run test (unit, 209) and npm run db:test (database, 269) are different suites with different counts.
 Health check: http://localhost:3000/api/health
 
 ## Open questions
@@ -132,11 +138,12 @@ Health check: http://localhost:3000/api/health
 - Answers to the remaining pilot interview questions (delivery, how they check M-Pesa messages, past losses, what they would pay, how they take photos today)
 - Custom SMTP: buy a domain in Phase 12, or create pilot accounts by hand in the dashboard (D036)
 - Staging email templates (confirmation and recovery) are locked until custom SMTP exists. Apply supabase/templates files in Phase 12.
-- A Swahili speaker must confirm all Swahili text, including category names, before the pilot (D041)
+- A Swahili speaker must confirm all Swahili text, including category names and the sayings on the public pages, before the pilot (D041)
+- Storefront look: the owner finds the current public pages not unique enough and wants a stronger designer feel, with clothes shown on hangers and rotation. Decided: build the planned roadmap first, hanger style display with photos (no real 3D) is the recommended next design step, spin or 3D and the lookbook are deferred (D067). Owner to send screenshots or a reference site.
+- Lookbook data model (looks, outfits) and stock holding rules: design in or after Phase 7 (D067)
 - Photo storage: about 100 to 200 KB per photo with its thumbnail, 100 MB cap per shop, Supabase free storage about 1 GB in total. Recheck the cost table at 100 and 1000 shops.
 - Stray photo files if a delete fails: add a cleanup job in Phase 11
 - Uploaded files are checked by declared type and size only, add scanning in Phase 11
-- The seed script creates products without photos. Add sample photos in Chunk 23b so the storefront has something to show.
 - Changing which photo is the cover: not built yet
 - Adding a new size or colour to an existing product, and switching a variant off: not built yet, add as a small chunk
 - Older actions in photos and catalogue still carry their own copy of the shop lookup, move them to src/features/shops/access.ts in a cleanup
@@ -149,21 +156,18 @@ Health check: http://localhost:3000/api/health
 - Cosmetics expiry and labelling rules: ask a lawyer or KEBS before the pilot
 - Per variant prices exist in the database but the screens use one price per product
 - The product list shows the newest 100 products only, add paging if a shop passes that
+- Public shop page pages through 48 products at a time with Back and More items links, and the page number is capped at 2000
 - Confirm Pochi la Biashara details in Phase 6
-- CAPTCHA, leaked password protection and stronger rate limits (Phase 11)
+- CAPTCHA, leaked password protection and stronger rate limits, including for public functions (Phase 11)
 - A change password option for logged in users: add on a settings page later
 - Team size limit and the catalogue and photo limits should later come from plan limits in the database
 - Phone number login for sellers: needs a paid SMS provider, revisit after the pilot
 - Generated TypeScript types for the database: deferred, results are checked with Zod instead (D051), revisit in Phase 11
-- anon holds every permission on the countries table including TRUNCATE: revoke in Chunk 23b after checking what authenticated can do
-- The view variant_stock: confirm it respects RLS (security invoker) and that anon cannot read it, check in Chunk 23a part 3
-- Which functions anon and authenticated can run: check in Chunk 23a part 3, revoke anything anon does not need
-- Lawyer questions for Phase 12: foreign Supabase region and Privacy Policy wording, collecting emails, ODPC registration, trademark and impersonation clause, prohibited and counterfeit goods and image rights clause, takedown process, marketplace duties for disputes and refunds, controller and processor roles for staff data, data processing agreement with the email provider, font licences, staff activity records and retention
+- Font warning "Failed to find font override values" for Atkinson Hyperlegible Next: harmless, silence with adjustFontFallback false in src/app/layout.tsx if not done yet
+- Lawyer questions for Phase 12: foreign Supabase region and Privacy Policy wording, collecting emails, ODPC registration, trademark and impersonation clause, prohibited and counterfeit goods and image rights clause, takedown process, marketplace duties for disputes and refunds, public price and consumer protection rules for online sellers, controller and processor roles for staff data, data processing agreement with the email provider, font licences, staff activity records and retention
 
 ## Notes for the next chat
 
-Chunk 21b verified on 2 November 2026: photos show whole. Chunk 22 delivered and merged (PR 35): shared access helpers, edit product, stock page per product with levels, record stock change form in everyday words, history with undo via reversal entries, archive and restore, 182 unit tests in total. Phase 4 is complete.
+Chunk 22c removed the parked migration that PR 36 merged by mistake (D066). Chunk 23b added get_public_shop with 43 database checks and tightened grants (D068, D069). Chunk 23c added the public shop page, the storefront data layer, sample photos in the seed, and the guard tests (D071). Chunk 24a added get_public_product, the product page with pickers, and 23 database checks (D070). The branch parked/public-shop-read-old is kept as a reference only.
 
-Chunk 22c merged on 18 November 2026: PR 36 had merged the parked branch parked/public-shop-read-old into main by mistake, and the parked migration 20261102113239_public_shop_read.sql and its test file were removed again. It was never applied to staging or local. CI green, db:test passing (203 checks in 8 files). The branch parked/public-shop-read-old is kept as a reference only and must not be reused unless pasted for review. D064 and D065 stay proposed until Chunk 23b.
-
-Chunk 23a part 2 done on 18 November 2026: the real schema was inspected, see the Real schema facts section. Next is Chunk 23a part 3, a read only check of the variant_stock view, function permissions, policies and the photo bucket, then Chunk 23b writes get_public_shop fresh.
+Next is Chunk 25, the shared browse page. Plan: a new column on shops that says whether the shop takes part (default off), a function only owners can call to switch it, a public function that lists live products from participating shops with paging, pgTAP tests that try to break it, and a page that links each product to its own shop's product page. No combined cart (D058).
