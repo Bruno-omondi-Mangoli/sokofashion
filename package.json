@@ -47,7 +47,7 @@
     "sharp": "^0.35.5",
     "supabase": "^2.120.0",
     "tailwindcss": "^4",
-    "typescript": "^5",
+    "typescript": "^7",
     "vitest": "^5.0.4"
   }
 }
