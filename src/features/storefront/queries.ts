@@ -1,7 +1,14 @@
 import 'server-only';
 import { cache } from 'react';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
-import { currencyUnitsSchema, publicShopResultSchema, type PublicShop } from './schemas';
+import { PRODUCT_ID_PATTERN } from './picker';
+import {
+  currencyUnitsSchema,
+  publicProductResultSchema,
+  publicShopResultSchema,
+  type PublicProductResult,
+  type PublicShop,
+} from './schemas';
 import { SHOP_LINK_PATTERN } from './view';
 
 /*
@@ -29,6 +36,33 @@ export const getPublicShop = cache(
     if (!parsed.success) {
       console.error('get_public_shop returned an unexpected shape');
       throw new Error('The shop could not be loaded');
+    }
+    return parsed.data;
+  },
+);
+
+/* Reads one live product through get_public_product. Null for anything the public may not see. */
+export const getPublicProduct = cache(
+  async (slug: string, productId: string): Promise<PublicProductResult | null> => {
+    if (!SHOP_LINK_PATTERN.test(slug) || !PRODUCT_ID_PATTERN.test(productId)) {
+      return null;
+    }
+
+    const supabase = await createSupabaseServerClient();
+    const { data, error } = await supabase.rpc('get_public_product', {
+      shop_slug: slug,
+      target_product_id: productId,
+    });
+
+    if (error) {
+      console.error('get_public_product failed', error.code);
+      throw new Error('The item could not be loaded');
+    }
+
+    const parsed = publicProductResultSchema.safeParse(data);
+    if (!parsed.success) {
+      console.error('get_public_product returned an unexpected shape');
+      throw new Error('The item could not be loaded');
     }
     return parsed.data;
   },
