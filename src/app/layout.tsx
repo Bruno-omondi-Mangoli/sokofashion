@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Atkinson_Hyperlegible_Next, Young_Serif } from 'next/font/google';
 import type { ReactNode } from 'react';
 import './globals.css';
+import { CartBar } from '@/features/cart/cart-bar';
 
 /*
  * Young Serif is a warm, sturdy display face that stays readable at heading
@@ -33,7 +34,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`${display.variable} ${body.variable}`}>
-      <body className="bg-sand text-ink min-h-dvh antialiased">{children}</body>
+      <body className="bg-sand text-ink min-h-dvh antialiased">
+        {children}
+        <CartBar />
+      </body>
     </html>
   );
 }
