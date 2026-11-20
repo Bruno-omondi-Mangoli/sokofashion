@@ -31,4 +31,13 @@ describe('public page guard', () => {
       expect(readFileSync(file, 'utf8'), file).not.toMatch(/dangerouslySetInnerHTML/);
     }
   });
+
+  it('keeps the browse card photo fitted whole inside a fixed box (D059)', () => {
+    const card = readFileSync(
+      path.join(process.cwd(), 'src/features/storefront/browse-card.tsx'),
+      'utf8',
+    );
+    expect(card).toMatch(/object-contain/);
+    expect(card).toMatch(/\bh-48\b/);
+  });
 });

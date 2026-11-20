@@ -41,7 +41,7 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
             description="No shop has items on show right now. Please check again soon."
           />
         ) : (
-          <div className="grid grid-cols-2 items-start gap-3">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             {products.map((product) => (
               <BrowseCard
                 key={product.id}
