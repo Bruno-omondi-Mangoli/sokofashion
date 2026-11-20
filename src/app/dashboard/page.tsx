@@ -90,6 +90,12 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                     >
                       Shared page
                     </Link>
+                    <Link
+                      href={`/dashboard/delivery/${shop.slug}`}
+                      className={buttonClasses('secondary', 'w-full sm:w-auto')}
+                    >
+                      Delivery
+                    </Link>
                   </>
                 ) : null}
               </div>
