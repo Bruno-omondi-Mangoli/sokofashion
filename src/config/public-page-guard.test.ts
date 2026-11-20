@@ -2,7 +2,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
-const folders = ['src/app/s', 'src/features/storefront', 'src/features/photos'];
+const folders = ['src/app/s', 'src/app/browse', 'src/features/storefront', 'src/features/photos'];
 
 function sourceFiles(folder: string): string[] {
   const root = path.join(process.cwd(), folder);
