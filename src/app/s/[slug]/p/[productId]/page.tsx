@@ -66,6 +66,19 @@ export default async function ProductPage({ params }: ProductPageProps) {
             variants={product.variants}
             currencyCode={product.currency_code}
             minorUnits={minorUnits}
+            cart={{
+              shopSlug: shop.slug,
+              shopName: shop.name,
+              productId: product.id,
+              productName: product.name,
+              image: product.images[0]
+                ? {
+                    thumbPath: product.images[0].thumb_path,
+                    width: product.images[0].width,
+                    height: product.images[0].height,
+                  }
+                : null,
+            }}
           />
         </Card>
 

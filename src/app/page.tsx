@@ -23,6 +23,9 @@ export default function HomePage() {
             <Link href="/login" className={buttonClasses('secondary')}>
               Log in
             </Link>
+            <Link href="/browse" className={buttonClasses('secondary')}>
+              Browse all shops
+            </Link>
           </div>
         </section>
 
