@@ -6,9 +6,11 @@ const folders = [
   'src/app/s',
   'src/app/browse',
   'src/app/cart',
+  'src/app/checkout',
   'src/features/storefront',
   'src/features/photos',
   'src/features/cart',
+  'src/features/orders',
 ];
 
 function sourceFiles(folder: string): string[] {

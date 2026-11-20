@@ -43,8 +43,8 @@ export function CartView() {
   return (
     <div className="flex flex-col gap-5">
       <Alert tone="info">
-        Ordering opens soon. Prices and stock are checked again when you place an order, so they may
-        differ from what you see here.
+        Prices and stock are checked again when you place an order, so they may differ from what you
+        see here.
       </Alert>
 
       {groups.map((group) => (
@@ -122,9 +122,9 @@ export function CartView() {
           <p className="text-ink text-lg font-semibold">
             Total: {formatMoney(group.subtotalMinor, group.currencyCode, group.minorUnits)}
           </p>
-          <Button variant="primary" className="w-full" disabled>
-            Place order (coming soon)
-          </Button>
+          <Link href={`/checkout/${group.shopSlug}`} className={buttonClasses('primary', 'w-full')}>
+            Place order
+          </Link>
           <Button variant="secondary" className="w-full" onClick={() => clearShop(group.shopSlug)}>
             Empty this cart
           </Button>
