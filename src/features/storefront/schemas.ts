@@ -33,7 +33,9 @@ export const publicShopSchema = z.object({
   name: z.string(),
   slug: z.string(),
   currency_code: z.string(),
-  products: z.array(productSchema),
+  about: z.string().nullable(),
+  new_count: z.number().int().nonnegative(),
+  products: z.array(productSchema.extend({ is_new: z.boolean() })),
 });
 
 /* The function answers null for a missing or suspended shop */

@@ -13,10 +13,12 @@ export function ProductCard({
   product,
   minorUnits,
   shopSlug,
+  isNew = false,
 }: {
   product: PublicProduct;
   minorUnits: number;
   shopSlug: string;
+  isNew?: boolean;
 }) {
   const photos = buildPhotoViews(product.images, publicPhotoUrl);
   const available = productInStock(product.variants);
@@ -34,7 +36,12 @@ export function ProductCard({
             {product.name}
           </Link>
         </h2>
-        <Badge tone={available ? 'positive' : 'muted'}>{available ? 'In stock' : 'Sold out'}</Badge>
+        <div className="flex flex-wrap justify-end gap-1">
+          {isNew ? <Badge tone="owner">New</Badge> : null}
+          <Badge tone={available ? 'positive' : 'muted'}>
+            {available ? 'In stock' : 'Sold out'}
+          </Badge>
+        </div>
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3">

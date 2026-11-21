@@ -14,6 +14,7 @@ const browseProductSchema = z.object({
   category_code: z.string(),
   price_minor: z.number().int().nonnegative(),
   currency_code: z.string(),
+  is_new: z.boolean(),
   in_stock: z.boolean(),
   cover: coverSchema.nullable(),
   shop: z.object({ name: z.string(), slug: z.string() }),
@@ -21,7 +22,10 @@ const browseProductSchema = z.object({
 
 /* The function answers null for an offset outside the allowed range */
 export const publicBrowseResultSchema = z
-  .object({ products: z.array(browseProductSchema) })
+  .object({
+    new_count: z.number().int().nonnegative(),
+    products: z.array(browseProductSchema),
+  })
   .nullable();
 
 export type BrowseProduct = z.infer<typeof browseProductSchema>;

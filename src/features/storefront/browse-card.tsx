@@ -35,10 +35,11 @@ export function BrowseCard({
             className="h-auto max-h-full w-auto max-w-full object-contain"
           />
         ) : null}
-        <div className="absolute top-2 left-2">
+        <div className="absolute top-2 left-2 flex flex-wrap gap-1">
           <Badge tone={product.in_stock ? 'positive' : 'muted'}>
             {product.in_stock ? 'In stock' : 'Sold out'}
           </Badge>
+          {product.is_new ? <Badge tone="owner">New</Badge> : null}
         </div>
       </div>
 

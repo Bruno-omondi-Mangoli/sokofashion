@@ -5,6 +5,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { Pindo } from '@/components/ui/pindo';
 import { BrowseCard } from '@/features/storefront/browse-card';
 import { getPublicBrowse } from '@/features/storefront/browse-queries';
+import { NewTally } from '@/features/storefront/new-tally';
 import { getCurrencyMinorUnits } from '@/features/storefront/queries';
 import { PAGE_SIZE, pageToOffset } from '@/features/storefront/view';
 
@@ -18,7 +19,7 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
   const { page: pageText } = await searchParams;
   const { page, offset } = pageToOffset(pageText);
 
-  const products = await getPublicBrowse(offset);
+  const { products, newCount } = await getPublicBrowse(offset);
 
   const currencies = [...new Set(products.map((product) => product.currency_code))];
   const unitList = await Promise.all(currencies.map((code) => getCurrencyMinorUnits(code)));
@@ -34,6 +35,8 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
         <p className="text-ink-soft text-base">
           Tap an item to see its sizes and colours. You order from the shop that sells it.
         </p>
+
+        {page === 1 ? <NewTally count={newCount} /> : null}
 
         {products.length === 0 ? (
           <EmptyState

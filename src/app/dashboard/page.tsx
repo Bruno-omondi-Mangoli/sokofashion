@@ -65,6 +65,13 @@ function shopActions(slug: string) {
       variant: 'secondary' as const,
       ownerOnly: true,
     },
+    {
+      href: `/dashboard/about/${slug}`,
+      label: 'About',
+      text: 'Write a short text about your shop that buyers read at the top of your page.',
+      variant: 'secondary' as const,
+      ownerOnly: true,
+    },
   ];
 }
 
