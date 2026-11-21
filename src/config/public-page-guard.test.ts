@@ -49,4 +49,13 @@ describe('public page guard', () => {
     expect(card).toMatch(/object-contain/);
     expect(card).toMatch(/\bh-48\b/);
   });
+
+  it('keeps the photo strip fitted whole, with no cropping (D059)', () => {
+    const strip = readFileSync(
+      path.join(process.cwd(), 'src/features/storefront/photo-strip.tsx'),
+      'utf8',
+    );
+    expect(strip).toMatch(/object-contain/);
+    expect(strip).toMatch(/\bh-72\b/);
+  });
 });
