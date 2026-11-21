@@ -2,10 +2,12 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { buttonClasses } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Pindo } from '@/components/ui/pindo';
 import { Ujumbe } from '@/components/ui/ujumbe';
 import { Awning } from '@/features/storefront/awning';
+import { NewTally } from '@/features/storefront/new-tally';
 import { ProductCard } from '@/features/storefront/product-card';
 import { getCurrencyMinorUnits, getPublicShop } from '@/features/storefront/queries';
 import { PAGE_SIZE, pageToOffset } from '@/features/storefront/view';
@@ -45,6 +47,15 @@ export default async function ShopPage({ params, searchParams }: ShopPageProps) 
         </div>
       </Awning>
       <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-5 px-5 pb-8">
+        {page === 1 ? <NewTally count={shop.new_count} /> : null}
+
+        {page === 1 && shop.about ? (
+          <Card>
+            <h2 className="font-display text-title text-ink">About this shop</h2>
+            <p className="text-ink text-base whitespace-pre-line">{shop.about}</p>
+          </Card>
+        ) : null}
+
         {shop.products.length === 0 ? (
           <EmptyState
             title="Nothing for sale here yet"
@@ -57,6 +68,7 @@ export default async function ShopPage({ params, searchParams }: ShopPageProps) 
               product={product}
               minorUnits={minorUnits}
               shopSlug={shop.slug}
+              isNew={product.is_new}
             />
           ))
         )}

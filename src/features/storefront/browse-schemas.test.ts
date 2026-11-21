@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { publicBrowseResultSchema } from './browse-schemas';
 
 const good = {
+  new_count: 1,
   products: [
     {
       id: 'p1',
@@ -9,6 +10,7 @@ const good = {
       category_code: 'clothes',
       price_minor: 150000,
       currency_code: 'KES',
+      is_new: true,
       in_stock: true,
       cover: { id: 'i1', path: 'a/b/c.webp', thumb_path: 'a/b/c_t.webp', width: 800, height: 1200 },
       shop: { name: 'Alpha Shop', slug: 'alphashop' },
@@ -23,7 +25,7 @@ describe('publicBrowseResultSchema', () => {
 
   it('accepts null and an empty list', () => {
     expect(publicBrowseResultSchema.safeParse(null).success).toBe(true);
-    expect(publicBrowseResultSchema.safeParse({ products: [] }).success).toBe(true);
+    expect(publicBrowseResultSchema.safeParse({ new_count: 0, products: [] }).success).toBe(true);
   });
 
   it('drops fields the page must never show', () => {
@@ -38,5 +40,9 @@ describe('publicBrowseResultSchema', () => {
     const broken = structuredClone(good);
     (broken.products[0].cover as Record<string, unknown>).height = 0;
     expect(publicBrowseResultSchema.safeParse(broken).success).toBe(false);
+  });
+
+  it('rejects an answer without the new arrivals fields', () => {
+    expect(publicBrowseResultSchema.safeParse({ products: [] }).success).toBe(false);
   });
 });
