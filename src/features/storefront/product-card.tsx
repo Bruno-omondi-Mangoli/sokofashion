@@ -1,11 +1,13 @@
+import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { formatMoney } from '@/features/catalogue/money';
-import { PhotoTile } from '@/features/photos/photo-tile';
 import { publicPhotoUrl } from '@/features/photos/urls';
+import { PhotoStrip } from './photo-strip';
+import { PriceTag } from './price-tag';
 import type { PublicProduct } from './schemas';
+import { ThreadDots } from './thread-dots';
 import { buildPhotoViews, productInStock, variantLabel } from './view';
-import Link from 'next/link';
 
 export function ProductCard({
   product,
@@ -17,20 +19,11 @@ export function ProductCard({
   shopSlug: string;
 }) {
   const photos = buildPhotoViews(product.images, publicPhotoUrl);
-  const cover = photos[0];
-  const others = photos.slice(1);
   const available = productInStock(product.variants);
 
   return (
     <Card>
-      {cover ? <PhotoTile photo={cover} label={product.name} /> : null}
-      {others.length > 0 ? (
-        <div className="grid grid-cols-3 gap-2">
-          {others.map((photo, index) => (
-            <PhotoTile key={photo.id} photo={photo} label={`${product.name}, photo ${index + 2}`} />
-          ))}
-        </div>
-      ) : null}
+      <PhotoStrip photos={photos} label={product.name} size="thumb" />
 
       <div className="flex items-start justify-between gap-3">
         <h2 className="font-display text-title text-ink">
@@ -44,12 +37,17 @@ export function ProductCard({
         <Badge tone={available ? 'positive' : 'muted'}>{available ? 'In stock' : 'Sold out'}</Badge>
       </div>
 
-      <p className="text-ink text-lg font-semibold">
-        {formatMoney(product.price_minor, product.currency_code, minorUnits)}
-      </p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <PriceTag soldOut={!available}>
+          {formatMoney(product.price_minor, product.currency_code, minorUnits)}
+        </PriceTag>
+        <ThreadDots variants={product.variants} />
+      </div>
 
       {product.description ? (
-        <p className="text-ink-soft text-base whitespace-pre-line">{product.description}</p>
+        <p className="text-ink-soft line-clamp-3 text-base whitespace-pre-line">
+          {product.description}
+        </p>
       ) : null}
 
       <ul className="flex flex-col gap-2">

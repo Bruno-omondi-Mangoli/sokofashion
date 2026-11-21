@@ -4,6 +4,8 @@ import { notFound } from 'next/navigation';
 import { buttonClasses } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Pindo } from '@/components/ui/pindo';
+import { Ujumbe } from '@/components/ui/ujumbe';
+import { Awning } from '@/features/storefront/awning';
 import { ProductCard } from '@/features/storefront/product-card';
 import { getCurrencyMinorUnits, getPublicShop } from '@/features/storefront/queries';
 import { PAGE_SIZE, pageToOffset } from '@/features/storefront/view';
@@ -36,9 +38,13 @@ export default async function ShopPage({ params, searchParams }: ShopPageProps) 
   return (
     <div className="flex min-h-dvh flex-col">
       <Pindo />
-      <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-5 px-5 py-8">
-        <h1 className="font-display text-display text-ink">{shop.name}</h1>
-
+      <Awning slug={shop.slug}>
+        <div className="mx-auto w-full max-w-2xl px-5">
+          <p className="text-sm font-semibold tracking-widest uppercase">Soko Street stall</p>
+          <h1 className="font-display text-display">{shop.name}</h1>
+        </div>
+      </Awning>
+      <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-5 px-5 pb-8">
         {shop.products.length === 0 ? (
           <EmptyState
             title="Nothing for sale here yet"
@@ -73,6 +79,11 @@ export default async function ShopPage({ params, searchParams }: ShopPageProps) 
             </Link>
           ) : null}
         </nav>
+
+        <Ujumbe
+          saying="Kidole kimoja hakivunji chawa."
+          meaning="One finger cannot crush a louse. Together we do more."
+        />
       </main>
     </div>
   );

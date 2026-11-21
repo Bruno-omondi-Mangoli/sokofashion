@@ -4,8 +4,9 @@ import { notFound } from 'next/navigation';
 import { buttonClasses } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Pindo } from '@/components/ui/pindo';
-import { PhotoTile } from '@/features/photos/photo-tile';
 import { publicPhotoUrl } from '@/features/photos/urls';
+import { Awning } from '@/features/storefront/awning';
+import { PhotoStrip } from '@/features/storefront/photo-strip';
 import { getCurrencyMinorUnits, getPublicProduct } from '@/features/storefront/queries';
 import { VariantPicker } from '@/features/storefront/variant-picker';
 import { buildPhotoViews } from '@/features/storefront/view';
@@ -30,13 +31,16 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const { shop, product } = result;
   const minorUnits = await getCurrencyMinorUnits(product.currency_code);
   const photos = buildPhotoViews(product.images, publicPhotoUrl);
-  const cover = photos[0];
-  const others = photos.slice(1);
 
   return (
     <div className="flex min-h-dvh flex-col">
       <Pindo />
-      <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-5 px-5 py-8">
+      <Awning slug={shop.slug}>
+        <div className="mx-auto w-full max-w-2xl px-5">
+          <p className="font-display text-title">{shop.name}</p>
+        </div>
+      </Awning>
+      <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-5 px-5 pb-8">
         <Link
           href={`/s/${shop.slug}`}
           className="text-ink-soft text-base underline underline-offset-4"
@@ -46,20 +50,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
         <h1 className="font-display text-display text-ink">{product.name}</h1>
 
-        {cover ? (
-          <PhotoTile photo={{ ...cover, thumbUrl: cover.mainUrl }} label={product.name} />
-        ) : null}
-        {others.length > 0 ? (
-          <div className="grid grid-cols-3 gap-2">
-            {others.map((photo, index) => (
-              <PhotoTile
-                key={photo.id}
-                photo={photo}
-                label={`${product.name}, photo ${index + 2}`}
-              />
-            ))}
-          </div>
-        ) : null}
+        <PhotoStrip photos={photos} label={product.name} size="main" />
 
         <Card>
           <VariantPicker

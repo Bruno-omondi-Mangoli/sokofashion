@@ -20,6 +20,54 @@ type DashboardPageProps = {
   searchParams: Promise<{ problem?: string }>;
 };
 
+/* Every button on a shop card, with a sentence that says what it does */
+function shopActions(slug: string) {
+  return [
+    {
+      href: `/dashboard/products/${slug}`,
+      label: 'Products',
+      text: 'Add and change what you sell, with photos and stock.',
+      variant: 'primary' as const,
+      ownerOnly: false,
+    },
+    {
+      href: `/dashboard/orders/${slug}`,
+      label: 'Orders',
+      text: 'See who ordered and contact the buyer.',
+      variant: 'secondary' as const,
+      ownerOnly: false,
+    },
+    {
+      href: `/s/${slug}`,
+      label: 'View shop',
+      text: 'See your shop the way buyers see it.',
+      variant: 'secondary' as const,
+      ownerOnly: false,
+    },
+    {
+      href: `/dashboard/team/${slug}`,
+      label: 'Manage team',
+      text: 'Invite staff and switch off their access.',
+      variant: 'secondary' as const,
+      ownerOnly: true,
+    },
+    {
+      href: `/dashboard/visibility/${slug}`,
+      label: 'Shared page',
+      text: 'Choose whether your items show on the page shared with other shops.',
+      variant: 'secondary' as const,
+      ownerOnly: true,
+    },
+    {
+      href: `/dashboard/delivery/${slug}`,
+      label: 'Delivery',
+      text: 'Set pickup only, free delivery or a delivery fee.',
+      variant: 'secondary' as const,
+      ownerOnly: true,
+    },
+  ];
+}
+
 export default async function DashboardPage({ searchParams }: DashboardPageProps) {
   const { problem } = await searchParams;
   const supabase = await createSupabaseServerClient();
@@ -63,48 +111,24 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
               <p className="text-ink-soft text-sm break-all">
                 Shop link: {publicEnv.NEXT_PUBLIC_APP_URL}/s/{shop.slug}
               </p>
-              <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-                <Link
-                  href={`/dashboard/products/${shop.slug}`}
-                  className={buttonClasses('primary', 'w-full sm:w-auto')}
-                >
-                  Products
-                </Link>
-                <Link
-                  href={`/s/${shop.slug}`}
-                  className={buttonClasses('secondary', 'w-full sm:w-auto')}
-                >
-                  View shop
-                </Link>
-                <Link
-                  href={`/dashboard/orders/${shop.slug}`}
-                  className={buttonClasses('secondary', 'w-full sm:w-auto')}
-                >
-                  Orders
-                </Link>
-                {shop.role === 'owner' ? (
-                  <>
-                    <Link
-                      href={`/dashboard/team/${shop.slug}`}
-                      className={buttonClasses('secondary', 'w-full sm:w-auto')}
+              <ul className="flex flex-col gap-3">
+                {shopActions(shop.slug)
+                  .filter((action) => !action.ownerOnly || shop.role === 'owner')
+                  .map((action) => (
+                    <li
+                      key={action.href}
+                      className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-4"
                     >
-                      Manage team
-                    </Link>
-                    <Link
-                      href={`/dashboard/visibility/${shop.slug}`}
-                      className={buttonClasses('secondary', 'w-full sm:w-auto')}
-                    >
-                      Shared page
-                    </Link>
-                    <Link
-                      href={`/dashboard/delivery/${shop.slug}`}
-                      className={buttonClasses('secondary', 'w-full sm:w-auto')}
-                    >
-                      Delivery
-                    </Link>
-                  </>
-                ) : null}
-              </div>
+                      <Link
+                        href={action.href}
+                        className={buttonClasses(action.variant, 'w-full sm:w-40 sm:shrink-0')}
+                      >
+                        {action.label}
+                      </Link>
+                      <p className="text-ink-soft text-sm">{action.text}</p>
+                    </li>
+                  ))}
+              </ul>
             </Card>
           </li>
         ))}
