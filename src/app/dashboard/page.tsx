@@ -76,6 +76,12 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                 >
                   View shop
                 </Link>
+                <Link
+                  href={`/dashboard/orders/${shop.slug}`}
+                  className={buttonClasses('secondary', 'w-full sm:w-auto')}
+                >
+                  Orders
+                </Link>
                 {shop.role === 'owner' ? (
                   <>
                     <Link
