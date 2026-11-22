@@ -10,6 +10,7 @@ export const checkoutInfoSchema = z
     currency_code: z.string(),
     delivery_mode: z.enum(['pickup_only', 'free_delivery', 'paid_delivery']),
     delivery_fee_minor: z.number().int().nonnegative(),
+    whatsapp_phone: z.string().nullable(),
   })
   .nullable();
 

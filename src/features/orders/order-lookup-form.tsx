@@ -13,7 +13,11 @@ const inputClass =
 
 export function OrderLookupForm({ defaultReference }: { defaultReference: string }) {
   const [problem, setProblem] = useState<string | null>(null);
-  const [found, setFound] = useState<{ order: LookedUpOrder; minorUnits: number } | null>(null);
+  const [found, setFound] = useState<{
+    order: LookedUpOrder;
+    minorUnits: number;
+    whatsappPhone: string | null;
+  } | null>(null);
   const [pending, startTransition] = useTransition();
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -27,7 +31,11 @@ export function OrderLookupForm({ defaultReference }: { defaultReference: string
         phone: String(data.get('phone') ?? ''),
       });
       if (response.ok) {
-        setFound({ order: response.order, minorUnits: response.minorUnits });
+        setFound({
+          order: response.order,
+          minorUnits: response.minorUnits,
+          whatsappPhone: response.whatsappPhone,
+        });
       } else {
         setProblem(response.message);
       }
@@ -71,7 +79,13 @@ export function OrderLookupForm({ defaultReference }: { defaultReference: string
         </Card>
       </form>
 
-      {found ? <OrderReceipt order={found.order} minorUnits={found.minorUnits} /> : null}
+      {found ? (
+        <OrderReceipt
+          order={found.order}
+          minorUnits={found.minorUnits}
+          whatsappPhone={found.whatsappPhone}
+        />
+      ) : null}
     </div>
   );
 }

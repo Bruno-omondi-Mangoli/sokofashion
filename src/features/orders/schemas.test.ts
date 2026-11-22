@@ -43,6 +43,7 @@ describe('checkoutInfoSchema', () => {
       currency_code: 'KES',
       delivery_mode: 'paid_delivery',
       delivery_fee_minor: 30000,
+      whatsapp_phone: null,
     };
     expect(checkoutInfoSchema.safeParse(info).success).toBe(true);
     expect(checkoutInfoSchema.safeParse(null).success).toBe(true);
@@ -55,6 +56,7 @@ describe('checkoutInfoSchema', () => {
         currency_code: 'KES',
         delivery_mode: 'drone',
         delivery_fee_minor: 0,
+        whatsapp_phone: null,
       }).success,
     ).toBe(false);
   });

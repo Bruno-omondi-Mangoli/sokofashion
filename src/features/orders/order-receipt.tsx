@@ -4,12 +4,21 @@ import { buttonClasses } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { formatMoney } from '@/features/catalogue/money';
 import { buyerStatusText } from './buyer-status';
-import { formatWhen } from './format';
+import { formatWhen, shopWhatsappLink } from './format';
 import type { LookedUpOrder } from './lookup-schemas';
 import { statusLabels, statusTones } from './status';
 
 /* The buyer's receipt. Everything is plain text, and the phone number is never shown. */
-export function OrderReceipt({ order, minorUnits }: { order: LookedUpOrder; minorUnits: number }) {
+export function OrderReceipt({
+  order,
+  minorUnits,
+  whatsappPhone = null,
+}: {
+  order: LookedUpOrder;
+  minorUnits: number;
+  whatsappPhone?: string | null;
+}) {
+  const whatsapp = whatsappPhone ? shopWhatsappLink(whatsappPhone, order.reference) : null;
   return (
     <Card>
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -52,6 +61,17 @@ export function OrderReceipt({ order, minorUnits }: { order: LookedUpOrder; mino
         <p className="text-ink-soft text-sm whitespace-pre-line">
           Deliver to: {order.delivery_note}
         </p>
+      ) : null}
+
+      {whatsapp ? (
+        <a
+          href={whatsapp}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={buttonClasses('primary', 'w-full')}
+        >
+          Tell the shop on WhatsApp
+        </a>
       ) : null}
 
       <Link href={`/s/${order.shop.slug}`} className={buttonClasses('secondary', 'w-full')}>

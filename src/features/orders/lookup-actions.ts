@@ -4,6 +4,7 @@ import { getCurrencyMinorUnits } from '@/features/storefront/queries';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { lookedUpOrderSchema, lookupInputSchema } from './lookup-schemas';
 import type { LookupResponse } from './lookup-types';
+import { getCheckoutInfo } from './queries';
 
 /* One message for every failure, so it never says whether a reference exists */
 const NOT_FOUND =
@@ -40,5 +41,14 @@ export async function lookupOrderAction(input: unknown): Promise<LookupResponse>
   }
 
   const minorUnits = await getCurrencyMinorUnits(order.data.currency_code);
-  return { ok: true, order: order.data, minorUnits };
+
+  /* The shop's WhatsApp number is public. If it cannot be read, the receipt just has no button. */
+  let whatsappPhone: string | null = null;
+  try {
+    whatsappPhone = (await getCheckoutInfo(order.data.shop.slug))?.whatsapp_phone ?? null;
+  } catch {
+    whatsappPhone = null;
+  }
+
+  return { ok: true, order: order.data, minorUnits, whatsappPhone };
 }

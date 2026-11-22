@@ -49,7 +49,7 @@ select is(current_setting('test.r_inject'), 'NULL', 'an injection style link nam
 select is(current_setting('test.r_empty') || '/' || current_setting('test.r_long'), 'NULL/NULL', 'an empty and a very long link name give null');
 select is(current_setting('test.r_alpha') ~ '(shop_id|created_by|is_listed|"id"|"status")', false, 'internal fields are never returned');
 
-select is((select count(*)::int from jsonb_object_keys(current_setting('test.r_alpha')::jsonb)), 5, 'exactly five fields are returned');
+select is((select count(*)::int from jsonb_object_keys(current_setting('test.r_alpha')::jsonb)), 6, 'exactly six fields are returned');
 
 select * from finish();
 

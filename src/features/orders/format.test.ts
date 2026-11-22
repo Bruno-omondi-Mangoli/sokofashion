@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatPhone, formatWhen, whatsappLink } from './format';
-
+import { formatPhone, formatWhen, shopWhatsappLink, whatsappLink } from './format';
 describe('formatPhone', () => {
   it('shows a Kenyan number in the local way', () => {
     expect(formatPhone('254712345678')).toBe('0712 345 678');
@@ -26,5 +25,17 @@ describe('formatWhen', () => {
   });
   it('does not break on a bad date', () => {
     expect(formatWhen('not a date')).toBe('Unknown time');
+  });
+});
+
+describe('shopWhatsappLink', () => {
+  it('builds a link with the reference in an encoded message', () => {
+    expect(shopWhatsappLink('254712345678', 'SF-ABC234')).toBe(
+      'https://wa.me/254712345678?text=Hello%2C%20I%20placed%20order%20SF-ABC234%20on%20SokoFashion.',
+    );
+  });
+  it('gives null for a bad phone or a bad reference', () => {
+    expect(shopWhatsappLink('0712345678', 'SF-ABC234')).toBeNull();
+    expect(shopWhatsappLink('254712345678', 'hello&x=1')).toBeNull();
   });
 });

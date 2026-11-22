@@ -93,3 +93,21 @@ export async function getOrderDetail(
   }
   return { order: order.data, items: items.data };
 }
+
+/* How many unpaid orders are still inside their 24 hours. Row security only lets team members count them. */
+export async function countWaitingOrders(
+  supabase: SupabaseClient,
+  shopId: string,
+): Promise<number> {
+  const { count, error } = await supabase
+    .from('orders')
+    .select('id', { count: 'exact', head: true })
+    .eq('shop_id', shopId)
+    .eq('status', 'awaiting_payment')
+    .gt('expires_at', new Date().toISOString());
+  if (error) {
+    console.error('counting orders failed', error.code);
+    return 0;
+  }
+  return count ?? 0;
+}

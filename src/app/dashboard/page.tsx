@@ -13,6 +13,7 @@ import { getMyPendingInvitations } from '@/features/staff/queries';
 import { roleLabels } from '@/features/staff/types';
 import { publicEnv } from '@/lib/env/public';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { countWaitingOrders } from '@/features/orders/seller-queries';
 
 export const metadata: Metadata = { title: 'Your shops' };
 
@@ -72,6 +73,13 @@ function shopActions(slug: string) {
       variant: 'secondary' as const,
       ownerOnly: true,
     },
+    {
+      href: `/dashboard/whatsapp/${slug}`,
+      label: 'WhatsApp',
+      text: 'Add the number buyers use to message your shop about an order.',
+      variant: 'secondary' as const,
+      ownerOnly: true,
+    },
   ];
 }
 
@@ -96,6 +104,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   }
 
   const invitations = await getMyPendingInvitations(supabase);
+  const waiting = await Promise.all(shops.map((shop) => countWaitingOrders(supabase, shop.id)));
 
   return (
     <AppShell title="Your shops" userEmail={data.user.email ?? ''} signOut={signOutAction}>
@@ -108,7 +117,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       <PendingInvitations invitations={invitations} />
 
       <ul className="flex flex-col gap-4">
-        {shops.map((shop) => (
+        {shops.map((shop, index) => (
           <li key={shop.id}>
             <Card>
               <div className="flex flex-wrap items-center justify-between gap-2">
@@ -118,6 +127,18 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
               <p className="text-ink-soft text-sm break-all">
                 Shop link: {publicEnv.NEXT_PUBLIC_APP_URL}/s/{shop.slug}
               </p>
+              {waiting[index] > 0 ? (
+                <Alert tone="info">
+                  {waiting[index]} {waiting[index] === 1 ? 'order is' : 'orders are'} waiting for
+                  payment.{' '}
+                  <Link
+                    href={`/dashboard/orders/${shop.slug}?status=awaiting_payment`}
+                    className="text-primary font-semibold underline underline-offset-4"
+                  >
+                    Open orders
+                  </Link>
+                </Alert>
+              ) : null}
               <ul className="flex flex-col gap-3">
                 {shopActions(shop.slug)
                   .filter((action) => !action.ownerOnly || shop.role === 'owner')
