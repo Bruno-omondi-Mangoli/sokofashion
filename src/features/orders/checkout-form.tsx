@@ -11,6 +11,7 @@ import { groupByShop } from '@/features/cart/cart-logic';
 import { useCart } from '@/features/cart/use-cart';
 import { formatMoney } from '@/features/catalogue/money';
 import { deliveryOffered, previewFee, type DeliveryChoice } from './fee';
+import { shopWhatsappLink } from './format';
 import { placeOrderAction } from './place-order-actions';
 import type { CheckoutInfo, PlacedOrder } from './schemas';
 
@@ -49,6 +50,16 @@ export function CheckoutForm({ info, minorUnits }: CheckoutFormProps) {
           . {info.name} will contact you on the phone number you gave. Paying through the app comes
           soon.
         </Alert>
+        {info.whatsapp_phone && shopWhatsappLink(info.whatsapp_phone, placed.reference) ? (
+          <a
+            href={shopWhatsappLink(info.whatsapp_phone, placed.reference) ?? '#'}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={buttonClasses('primary', 'w-full')}
+          >
+            Tell the shop on WhatsApp
+          </a>
+        ) : null}
         <Link
           href={`/order?ref=${placed.reference}`}
           className={buttonClasses('primary', 'w-full')}

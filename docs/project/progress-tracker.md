@@ -1,10 +1,10 @@
 # Progress Tracker
 
-Last updated: 21 November 2026
+Last updated: 22 November 2026
 Current phase: Phase 6, orders (the phases were swapped, see D078)
-Current chunk: Chunk 30b, About this shop text and new arrivals, plus the docs for Chunks 28 to 30 (pull request open)
-Next chunk: Chunk 31, buyer order lookup and receipt: a public function that shows an order's status and items when the buyer gives the reference and the phone number, and a receipt page
-After that: notifications to sellers (Phase 6), then Phase 7, seller payment recording and confirmation
+Current chunk: Chunk 32, seller notifications through a waiting orders count and a shop WhatsApp number, plus the docs for Chunks 31 and 32 (pull request open)
+Next chunk: Chunk 33, the first chunk of Phase 7: the payments table, the buyer submitting an M-Pesa code against an order, the seller confirming it, and duplicate code detection, with tests that try to break it
+After that: marking an order handed over (completed), then Phase 8 (shop ledger, expenses, customer debts)
 
 ## Phases
 
@@ -14,8 +14,8 @@ Phase 2: Multi-tenant database, roles, RLS with isolation tests: done
 Phase 3: Authentication, onboarding, shop creation, staff invitations, email confirmation, password reset: done
 Phase 4: Design system, catalogue, stock ledger, product screens, dev seed, photos, edit, stock and archive: done
 Phase 5: Public storefront, shared browse page, browser cart: done
-Phase 6: Orders, delivery, digital receipts, notifications: in progress. Done: order core (27), place order screen and delivery settings (28), seller orders screen (29), Soko Street look (30a), About text and new arrivals (30b, in the pull request). Still to build: buyer order lookup and receipt (31), seller notifications.
-Phase 7: Seller payment recording and confirmation, provider interface: not started
+Phase 6: Orders, delivery, digital receipts, notifications: done once Chunk 32 is merged (order core 27, place order screen 28, seller orders screen 29, Soko Street look 30a, About text and new arrivals 30b, buyer lookup and receipt 31, notifications 32). The VAT and eTIMS question to an accountant is still open before real shops use it.
+Phase 7: Seller payment recording and confirmation, provider interface: next
 Phase 8: Shop ledger, expenses, customer debts, reports, owner only cost prices: not started
 Phase 9: Anti-theft and staff control module: not started
 Phase 10: Subscription billing, platform admin, trust and safety: not started
@@ -49,13 +49,13 @@ Zero spend until the pilot is complete (D013, D014). Upgrade Vercel and Supabase
 - Zod, server-only, env validators, Vitest unit tests (run npm run test for the count): done
 - sharp as a development only dependency for sample photos in the seed: done
 - Docker Desktop, Supabase CLI as a dev dependency: done
-- Local database: shops, members, invitations, categories, products, variants, stock ledger, product photos and storage bucket, orders and order items, all with RLS: done
-- pgTAP tests in supabase/tests/database (407 checks in 14 files after Chunk 29, 437 in 15 files once Chunk 30b is merged), run locally and in CI: done
-- Bitwarden, Supabase account and organization, staging project linked, fourteen migrations pushed after Chunk 29 and fifteen once Chunk 30b is pushed (confirm with npx supabase migration list): done
-- Auth screens, design system, AppShell, dashboard with a sentence beside every button, onboarding, team page, product list, add product, product page, photos, edit, stock and archive screens: done
-- Public shop page /s/[slug] with awning, hang tags, thread dots and photo strip, product page /s/[slug]/p/[productId], shared page /browse, browser cart /cart, checkout /checkout/[slug]: done
-- Owner screens: shared page switch /dashboard/visibility/[slug], delivery /dashboard/delivery/[slug], seller orders /dashboard/orders/[slug] (all done), About text /dashboard/about/[slug] (in pull request)
-- Public functions get_public_shop, get_public_product, get_public_browse, get_public_checkout_info, place_order; owner functions set_shop_listed, set_shop_delivery, set_shop_about (in pull request); team functions cancel_order (owners and managers) and release_expired_orders (any active team member): done
+- Local database: shops, members, invitations, categories, products, variants, stock ledger, product photos and storage bucket, orders, order items and order lookup attempts, all with RLS: done
+- pgTAP tests in supabase/tests/database (465 checks in 16 files after Chunk 31, 488 in 17 files once Chunk 32 is merged), run locally and in CI: done
+- Bitwarden, Supabase account and organization, staging project linked, sixteen migrations pushed after Chunk 31 and seventeen once Chunk 32 is pushed (confirm with npx supabase migration list): done
+- Auth screens, design system, AppShell, dashboard with a sentence beside every button and a waiting orders message, onboarding, team page, product list, add product, product page, photos, edit, stock and archive screens: done
+- Public shop page /s/[slug] with awning, hang tags, thread dots and photo strip, product page /s/[slug]/p/[productId], shared page /browse, browser cart /cart, checkout /checkout/[slug], buyer order lookup and receipt /order: done
+- Owner screens: shared page switch /dashboard/visibility/[slug], delivery /dashboard/delivery/[slug], seller orders /dashboard/orders/[slug], About text /dashboard/about/[slug] (all done), WhatsApp number /dashboard/whatsapp/[slug] (in pull request)
+- Public functions get_public_shop, get_public_product, get_public_browse, get_public_checkout_info, place_order, lookup_order; owner functions set_shop_listed, set_shop_delivery, set_shop_about, set_shop_whatsapp (in pull request); team functions cancel_order (owners and managers) and release_expired_orders (any active team member): done
 - Shared shop access helpers in src/features/shops/access.ts for new code
 - Development seed with sample photos: npm run db:seed and npm run db:fresh, local only: done
 - Supabase production project: not yet created (second free slot reserved)
@@ -74,13 +74,13 @@ Local Studio: http://127.0.0.1:54323 (the cloud dashboard address starts with su
 Local fake inbox (confirmation emails): http://127.0.0.1:54324
 Local app address: http://localhost:3000 (always use localhost, not 127.0.0.1)
 Design guide: http://localhost:3000/design (hidden in production)
-Sample public shops locally: /s/mama-njeri, /s/zuri-shoes, /s/amani-bags (Mini Crossbody is a draft on purpose). Shared page: /browse. Cart: /cart. Checkout: /checkout/[slug]
+Sample public shops locally: /s/mama-njeri, /s/zuri-shoes, /s/amani-bags (Mini Crossbody is a draft on purpose). Shared page: /browse. Cart: /cart. Checkout: /checkout/[slug]. Order lookup: /order
 Local database container: supabase_db_sokofashion (check with docker ps)
 Local test accounts after npm run db:fresh: owner1, owner2, owner3 and attendant1 at example.test, password Password123!
 Account note: npm run db:reset deletes all local accounts, run npm run db:fresh instead.
 Photo bucket: product-images (public read, 500 KB per file, WebP and JPEG only)
 Photo table: product_images
-Order tables: orders and order_items. Order reference looks like SF plus six characters. Order error codes: SF001 not enough stock, SF002 item not available, SF003 shop not available, SF004 shop has too many waiting orders, SF005 phone has too many unpaid orders, SF006 shop does not deliver, 22023 bad input.
+Order tables: orders, order_items and order_lookup_attempts. Order reference looks like SF plus six characters from the letters and digits without I, L, O, 0 and 1. Order error codes: SF001 not enough stock, SF002 item not available, SF003 shop not available, SF004 shop has too many waiting orders, SF005 phone has too many unpaid orders, SF006 shop does not deliver, 22023 bad input.
 Supabase staging project ref: (your 20 letter ref)
 Supabase staging region: (your region)
 Supabase production project:
@@ -88,17 +88,17 @@ Vercel project:
 Domain:
 Secrets (database password, service role key) are stored only in Bitwarden. Never in Git or chat.
 
-## Real schema facts (checked on 18 November 2026, updated after Chunk 30b)
+## Real schema facts (checked on 18 November 2026, updated after Chunk 32)
 
-Tables: categories, countries, orders, order_items, product_images, product_variants, products, shop_invitations, shop_members, shops, stock_movements, and the view variant_stock (security invoker). RLS is on for every table.
+Tables: categories, countries, order_items, order_lookup_attempts, orders, product_images, product_variants, products, shop_invitations, shop_members, shops, stock_movements, and the view variant_stock (security invoker). RLS is on for every table.
 Enums: product_status (draft, active, archived), shop_role (owner, manager, attendant), shop_status (active, suspended), stock_reason (opening, restock, sale, sale_return, adjustment, damage, reversal), order_status (awaiting_payment, paid, completed, cancelled, expired), delivery_method (pickup, delivery), shop_delivery_mode (pickup_only, free_delivery, paid_delivery).
 Live product means products.status is active. A public shop must also have shops.status active. The shared page also needs shops.is_listed true (default true).
-Shops also hold delivery_mode (default pickup_only), delivery_fee_minor and about (up to 500 characters, empty when blank).
+Shops also hold delivery_mode (default pickup_only), delivery_fee_minor, about (up to 500 characters, empty when blank) and whatsapp_phone (254 plus nine digits, empty when not set).
 New arrivals: a product is new for 14 days after created_at (D086).
 Photos: product_images has id, shop_id, product_id, sort_order (1 to 4), storage_path, width, height, byte_size. The path is shop_id/product_id/image_id.ext for the main file and shop_id/product_id/image_id_t.ext for the thumbnail, with ext webp or jpg.
 Stock: stock_movements.quantity_change summed per variant. Orders take stock with sale rows and give it back with reversal rows.
 Variants: size, colour, shade, volume_ml, expires_on, price_minor (can be empty), is_active.
-Anonymous visitors (anon) can read only categories and countries as tables, and can run only get_public_shop, get_public_product, get_public_browse, get_public_checkout_info and place_order. Signed in users can also run set_shop_listed, set_shop_delivery, set_shop_about, cancel_order and release_expired_orders, and each refuses by role or membership. Countries is read only for everybody (D068).
+Anonymous visitors (anon) can read only categories and countries as tables, and can run only get_public_shop, get_public_product, get_public_browse, get_public_checkout_info, place_order and lookup_order. Signed in users can also run set_shop_listed, set_shop_delivery, set_shop_about, set_shop_whatsapp, cancel_order and release_expired_orders, and each refuses by role or membership. Countries is read only for everybody (D068).
 All public functions have a fixed search_path.
 
 ## Useful commands
@@ -134,18 +134,20 @@ Rule: the public reads data only through get_public functions, and seller text i
 Rule: a database test for a function that reads every shop must first switch the seed shops off, inside the test (D073).
 Rule: the browser never sends a price or a fee, the database decides both (D080, D082).
 Rule: seller text never reaches a style, colour names go through a fixed lookup (D084).
+Rule: test fixtures must use values the real code can produce, for example order references never contain I, L or O.
 Rule: npm run test (unit tests) and npm run db:test (database checks) are different suites with different counts.
 Health check: http://localhost:3000/api/health
 
 ## Open questions
 
-- Buyers cannot look up an order after leaving the confirmation screen. Chunk 31 adds a lookup by reference and phone, which needs rate limiting thought because references could be guessed.
-- Sellers are not notified when an order arrives, they must open the Orders screen. Notifications need a channel that costs nothing (D030 explains why email is limited). To decide in Phase 6.
+- Sellers are told about new orders only by the waiting orders message on the dashboard and by buyers' WhatsApp messages (D088). Automatic messages come after the pilot.
 - Expiry now runs when a team member opens the orders list or when someone places an order for that shop. A scheduled job for shops nobody opens is planned for Phase 11.
+- Order lookup lockout can be triggered on purpose by someone who knows a phone number (D087). Real rate limiting and CAPTCHA come in Phase 11.
 - Delivery fees by area, and free delivery above a total: deferred (D081)
 - Offers with a was price: deferred, needs a column and database checked prices (D086)
 - The New window uses created_at, a real went live date column may replace it (D086)
-- About text may contain phone numbers or promises, it is plain text only. Moderation tools come in Phase 10 and consumer protection wording goes to the Phase 12 lawyer.
+- About text and WhatsApp number are public seller supplied text. Moderation tools come in Phase 10 and consumer protection wording goes to the Phase 12 lawyer.
+- Marking an order handed over (completed) is not built yet, it comes after payment confirmation in Phase 7
 - Place order uses plain form fields, move them to shared field components in a cleanup
 - Final product name (SokoFashion is the project name, DukaLink is the provisional product name)
 - Payment gateway for launch (Phase 7)
@@ -168,22 +170,22 @@ Health check: http://localhost:3000/api/health
 - Owner feedback on how the Soko Street look, the add product form, the photo and stock screens feel
 - Dark mode: revisit in Phase 11
 - Price changes and stock write offs are not alerted on yet, the audit trail and alerts come in Phase 9
-- VAT and eTIMS handling of prices and delivery fees: ask an accountant before Phase 6 goes live to real shops
+- VAT and eTIMS handling of prices and delivery fees: ask an accountant before real shops use orders
 - Cosmetics expiry and labelling rules: ask a lawyer or KEBS before the pilot
 - Per variant prices exist in the database but the screens use one price per product
 - The product list shows the newest 100 products only, add paging if a shop passes that
 - Public shop and shared pages page through 48 products at a time with Back and More items links, and the page number is capped at 2000
 - Confirm Pochi la Biashara details in Phase 7
-- CAPTCHA, leaked password protection and stronger rate limits, including for public functions and place_order (Phase 11)
+- CAPTCHA, leaked password protection and stronger rate limits, including for public functions, place_order and lookup_order (Phase 11)
 - A change password option for logged in users: add on a settings page later
 - Team size limit and the catalogue and photo limits should later come from plan limits in the database
 - Phone number login for sellers: needs a paid SMS provider, revisit after the pilot
 - Generated TypeScript types for the database: deferred, results are checked with Zod instead (D051), revisit in Phase 11
 - Font warning "Failed to find font override values" for Atkinson Hyperlegible Next: harmless, silence with adjustFontFallback false in src/app/layout.tsx if not done yet
-- Lawyer questions for Phase 12: foreign Supabase region and Privacy Policy wording, collecting emails, collecting buyer names, phone numbers and delivery addresses, ODPC registration, browser storage notice for the cart, trademark and impersonation clause, prohibited and counterfeit goods and image rights clause, takedown process, marketplace duties for disputes and refunds, public price and consumer protection rules for online sellers, controller and processor roles for staff data, data processing agreement with the email provider, font licences, staff activity records and retention
+- Lawyer questions for Phase 12: foreign Supabase region and Privacy Policy wording, collecting emails, collecting buyer names, phone numbers and delivery addresses, keeping phone numbers in the order lookup attempts table for up to a day, the shop WhatsApp number being public, ODPC registration, browser storage notice for the cart, trademark and impersonation clause, prohibited and counterfeit goods and image rights clause, takedown process, marketplace duties for disputes and refunds, public price and consumer protection rules for online sellers, controller and processor roles for staff data, data processing agreement with the email provider, font licences, staff activity records and retention
 
 ## Notes for the next chat
 
-Chunk 22c removed the parked migration that PR 36 merged by mistake (D066). Chunks 23 to 26 built the public storefront, the shared page with opt out and the browser cart (D068 to D077). The phases were swapped (D078). Chunk 27 added the order core and delivery fee (D080, D081), Chunk 28 the place order screen and delivery settings (D082), Chunk 29 the seller orders screen and release of expired orders (D083). Chunk 30a added the Soko Street look (D079, D084). Chunk 30b is in a pull request: shops.about and set_shop_about, new_count and is_new in get_public_shop and get_public_browse, the tally banner and New badges, and the owner About screen at /dashboard/about/[slug] (D085, D086), with 30 new database checks.
+Chunk 22c removed the parked migration that PR 36 merged by mistake (D066). Chunks 23 to 26 built the public storefront, the shared page with opt out and the browser cart (D068 to D077). The phases were swapped (D078). Chunk 27 added the order core and delivery fee (D080, D081), Chunk 28 the place order screen and delivery settings (D082), Chunk 29 the seller orders screen and release of expired orders (D083). Chunk 30a added the Soko Street look (D079, D084) and Chunk 30b added the About text and new arrivals (D085, D086). Chunk 31 added the buyer order lookup with a guess limit and the receipt page (D087), with 28 database checks. Chunk 32 is in a pull request: shops.whatsapp_phone and set_shop_whatsapp, the sixth field in get_public_checkout_info, the buyer WhatsApp button after ordering and on the receipt, the waiting orders message on the dashboard, and the owner screen at /dashboard/whatsapp/[slug] (D088), with 23 database checks.
 
-Next is Chunk 31. Plan: a public function that returns the status, items and totals of one order only when both the reference and the phone number match, with the same null answer for every wrong guess, a cap on how many guesses are allowed, and a receipt page for the buyer at /order, reachable from the confirmation screen. The abuse cases to test are guessing references, guessing phones, and reading another buyer's order.
+Next is Chunk 33, the start of Phase 7. Plan: a payments table linked to an order, where a buyer submits an M-Pesa code on the order receipt, the seller confirms or rejects it from the order screen, duplicate codes are refused across all shops, the order becomes paid only when an owner, manager or attendant confirms, and nothing is marked paid by the buyer. The abuse cases to test are a buyer submitting someone else's code, the same code used on two orders, a confirm by someone outside the shop, a dishonest attendant confirming without money (to be logged for the Phase 9 audit trail), and guessing codes. Before starting, ask the owner how the five shops record M-Pesa codes today and whether they need the amount checked against the order total.
