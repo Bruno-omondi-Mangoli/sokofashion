@@ -49,6 +49,12 @@ export function CheckoutForm({ info, minorUnits }: CheckoutFormProps) {
           . {info.name} will contact you on the phone number you gave. Paying through the app comes
           soon.
         </Alert>
+        <Link
+          href={`/order?ref=${placed.reference}`}
+          className={buttonClasses('primary', 'w-full')}
+        >
+          Look up this order later
+        </Link>
         <Link href={`/s/${info.slug}`} className={buttonClasses('secondary', 'w-full')}>
           Back to {info.name}
         </Link>

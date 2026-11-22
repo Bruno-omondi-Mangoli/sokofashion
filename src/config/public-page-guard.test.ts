@@ -7,6 +7,7 @@ const folders = [
   'src/app/browse',
   'src/app/cart',
   'src/app/checkout',
+  'src/app/order',
   'src/features/storefront',
   'src/features/photos',
   'src/features/cart',

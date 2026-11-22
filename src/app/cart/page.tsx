@@ -17,6 +17,9 @@ export default function CartPage() {
         <p className="text-ink-soft text-base">
           Each shop has its own cart, because you order from one shop at a time.
         </p>
+        <Link href="/order" className="text-ink-soft text-base underline underline-offset-4">
+          Find an order I already placed
+        </Link>
         <CartView />
       </main>
     </div>
