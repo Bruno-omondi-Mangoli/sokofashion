@@ -11,35 +11,41 @@ import { OrderReceipt } from './order-receipt';
 const inputClass =
   'bg-paper text-ink border-line min-h-12 w-full rounded-lg border px-4 text-base font-normal';
 
+type Found = {
+  order: LookedUpOrder;
+  minorUnits: number;
+  whatsappPhone: string | null;
+  phone: string;
+};
+
 export function OrderLookupForm({ defaultReference }: { defaultReference: string }) {
   const [problem, setProblem] = useState<string | null>(null);
-  const [found, setFound] = useState<{
-    order: LookedUpOrder;
-    minorUnits: number;
-    whatsappPhone: string | null;
-  } | null>(null);
+  const [found, setFound] = useState<Found | null>(null);
   const [pending, startTransition] = useTransition();
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
+  function runLookup(reference: string, phone: string) {
     setProblem(null);
-    setFound(null);
     startTransition(async () => {
-      const response = await lookupOrderAction({
-        reference: String(data.get('reference') ?? ''),
-        phone: String(data.get('phone') ?? ''),
-      });
+      const response = await lookupOrderAction({ reference, phone });
       if (response.ok) {
         setFound({
           order: response.order,
           minorUnits: response.minorUnits,
           whatsappPhone: response.whatsappPhone,
+          phone,
         });
       } else {
+        setFound(null);
         setProblem(response.message);
       }
     });
+  }
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    setFound(null);
+    runLookup(String(data.get('reference') ?? ''), String(data.get('phone') ?? ''));
   }
 
   return (
@@ -84,6 +90,8 @@ export function OrderLookupForm({ defaultReference }: { defaultReference: string
           order={found.order}
           minorUnits={found.minorUnits}
           whatsappPhone={found.whatsappPhone}
+          buyerPhone={found.phone}
+          onPaymentSent={() => runLookup(found.order.reference, found.phone)}
         />
       ) : null}
     </div>

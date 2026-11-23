@@ -12,6 +12,7 @@ const folders = [
   'src/features/photos',
   'src/features/cart',
   'src/features/orders',
+  'src/features/payments',
 ];
 
 function sourceFiles(folder: string): string[] {

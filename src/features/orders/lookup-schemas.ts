@@ -17,6 +17,7 @@ export const lookedUpOrderSchema = z
   .object({
     reference: z.string(),
     status: z.enum(ORDER_STATUSES),
+    payment_status: z.enum(['pending', 'confirmed', 'rejected']).nullable(),
     shop: z.object({ name: z.string(), slug: z.string() }),
     delivery_method: z.enum(['pickup', 'delivery']),
     delivery_note: z.string().nullable(),
