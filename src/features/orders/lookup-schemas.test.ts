@@ -4,6 +4,7 @@ import { lookedUpOrderSchema, lookupInputSchema } from './lookup-schemas';
 const order = {
   reference: 'SF-ABC234',
   status: 'awaiting_payment',
+  payment_status: null,
   shop: { name: 'Alpha Shop', slug: 'alphashop' },
   delivery_method: 'pickup',
   delivery_note: null,
@@ -40,6 +41,9 @@ describe('lookedUpOrderSchema', () => {
   });
   it('rejects an unknown status', () => {
     expect(lookedUpOrderSchema.safeParse({ ...order, status: 'shipped' }).success).toBe(false);
+  });
+  it('rejects an unknown payment status', () => {
+    expect(lookedUpOrderSchema.safeParse({ ...order, payment_status: 'paid' }).success).toBe(false);
   });
   it('drops fields the page must never show', () => {
     const parsed = lookedUpOrderSchema.parse({

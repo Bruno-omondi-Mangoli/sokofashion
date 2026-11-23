@@ -1,24 +1,34 @@
 import Link from 'next/link';
+import { Alert } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { buttonClasses } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { formatMoney } from '@/features/catalogue/money';
+import { PayForm } from '@/features/payments/pay-form';
 import { buyerStatusText } from './buyer-status';
 import { formatWhen, shopWhatsappLink } from './format';
 import type { LookedUpOrder } from './lookup-schemas';
 import { statusLabels, statusTones } from './status';
 
+type OrderReceiptProps = {
+  order: LookedUpOrder;
+  minorUnits: number;
+  whatsappPhone: string | null;
+  buyerPhone: string;
+  onPaymentSent: () => void;
+};
+
 /* The buyer's receipt. Everything is plain text, and the phone number is never shown. */
 export function OrderReceipt({
   order,
   minorUnits,
-  whatsappPhone = null,
-}: {
-  order: LookedUpOrder;
-  minorUnits: number;
-  whatsappPhone?: string | null;
-}) {
+  whatsappPhone,
+  buyerPhone,
+  onPaymentSent,
+}: OrderReceiptProps) {
   const whatsapp = whatsappPhone ? shopWhatsappLink(whatsappPhone, order.reference) : null;
+  const canPay = order.status === 'awaiting_payment' && order.payment_status !== 'pending';
+
   return (
     <Card>
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -61,6 +71,29 @@ export function OrderReceipt({
         <p className="text-ink-soft text-sm whitespace-pre-line">
           Deliver to: {order.delivery_note}
         </p>
+      ) : null}
+
+      {order.status === 'awaiting_payment' && order.payment_status === 'pending' ? (
+        <Alert tone="info">
+          Your M-Pesa code was sent. The shop is checking it. Check back here to see when your order
+          is marked paid.
+        </Alert>
+      ) : null}
+
+      {canPay ? (
+        <div className="flex flex-col gap-3">
+          {order.payment_status === 'rejected' ? (
+            <Alert tone="error">
+              The shop could not match your last code. Check it and send it again, or contact the
+              shop.
+            </Alert>
+          ) : null}
+          <p className="text-ink text-base">
+            Pay the shop with M-Pesa. The shop tells you where to send the money. Then type the code
+            from the M-Pesa message here.
+          </p>
+          <PayForm reference={order.reference} phone={buyerPhone} onSent={onPaymentSent} />
+        </div>
       ) : null}
 
       {whatsapp ? (

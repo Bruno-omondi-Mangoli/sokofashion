@@ -64,7 +64,7 @@ export function CheckoutForm({ info, minorUnits }: CheckoutFormProps) {
           href={`/order?ref=${placed.reference}`}
           className={buttonClasses('primary', 'w-full')}
         >
-          Look up this order later
+          Pay with your M-Pesa code or look up this order
         </Link>
         <Link href={`/s/${info.slug}`} className={buttonClasses('secondary', 'w-full')}>
           Back to {info.name}

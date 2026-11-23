@@ -11,6 +11,8 @@ import { formatPhone, formatWhen, whatsappLink } from '@/features/orders/format'
 import { cancelOrderAction } from '@/features/orders/seller-actions';
 import { getOrderDetail, releaseExpiredOrders } from '@/features/orders/seller-queries';
 import { statusLabels, statusTones } from '@/features/orders/status';
+import { PaymentCard } from '@/features/payments/payment-card';
+import { getOrderPayments } from '@/features/payments/queries';
 import { findMemberShop } from '@/features/shops/access';
 import { PRODUCT_ID_PATTERN } from '@/features/storefront/picker';
 import { getCurrencyMinorUnits } from '@/features/storefront/queries';
@@ -51,6 +53,7 @@ export default async function OrderPage({ params, searchParams }: OrderPageProps
   const { order, items } = detail;
   const units = await getCurrencyMinorUnits(order.currency_code);
   const whatsapp = whatsappLink(order.buyer_phone);
+  const payments = await getOrderPayments(supabase, order.id);
 
   /* Only used to decide what to show. The database refuses everybody else. */
   const canCancel =
@@ -139,11 +142,23 @@ export default async function OrderPage({ params, searchParams }: OrderPageProps
         </p>
       </Card>
 
+      <PaymentCard
+        payments={payments}
+        order={{
+          id: order.id,
+          status: order.status,
+          total_minor: order.total_minor,
+          currency_code: order.currency_code,
+        }}
+        slug={shop.slug}
+        units={units}
+        problem={problem}
+      />
+
       <Card>
         <h2 className="font-display text-title text-ink">Payment</h2>
         <p className="text-ink-soft text-base">
-          Check your M-Pesa message before you hand over the goods. Recording payments in the app is
-          coming soon.
+          Cancelling puts the items back on sale and closes any waiting M-Pesa code.
         </p>
         {canCancel ? (
           <form action={cancelOrderAction}>
